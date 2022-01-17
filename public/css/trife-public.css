@@ -1,0 +1,121 @@
+/**
+ * All of the CSS for your public-facing functionality should be
+ * included in this file.
+ */
+.high-res-image{
+    max-width: 200px;
+    border: 1px solid #d3d3d3;
+    margin-left: 40px;
+    display: flex;
+    margin-bottom: 20px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    height: 300px;
+    padding: 10px;
+}
+.high-res-image h4{
+    font-weight: 300;
+    text-align: center;
+}
+.high-res-image img{
+    object-fit: contain;
+    height: 200px;
+    width: 200px;
+}
+.high-res-image button{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: none;
+    background: #1C2B36;
+    text-transform: uppercase;
+    font-weight: 400;
+    padding: 10px 20px;
+    color: white;
+
+}
+.high-res-image button:hover{
+    background:#17a2b8;
+}
+
+#message{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 60px;
+
+} 
+#message h2{
+    color: red;
+}
+span.warning{
+    color: red;
+}
+
+.wcfm-hide-if-js{
+    display: none;
+}
+
+.is-invalid{
+    border: 1px solid red !important;
+
+}
+.error-message{
+    color: red;
+    padding-bottom: 15px;
+}
+.regular_price.wcfm_ele.wcfm_half_ele_title.wcfm_title.simple.external.non-subscription.non-variable-subscription.non-auction.non-redq_rental.non-accommodation-booking.non-lottery.non-pw-gift-card{
+    width: 100% !important;
+    display: flex;
+    flex-direction: column;
+}
+.lds-dual-ring.hidden { 
+display: none;
+}
+.lds-dual-ring {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+}
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 20% auto;
+  border-radius: 50%;
+  border: 6px solid #fff;
+  border-color: #fff transparent #fff transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0,0,0,.8);
+    z-index: 999;
+    opacity: 1;
+    transition: all 0.5s;
+}
+
+
+/* Visibility styling */
+
+div#wcfm-visibility\ wcfm-visibility.misc-pub-section.misc-pub-visibility {
+    padding: 15px !important;
+    margin-left: 10px;
+    border: 1px solid #d1d1d1d1 !important;
+    border-radius: 5px;
+}

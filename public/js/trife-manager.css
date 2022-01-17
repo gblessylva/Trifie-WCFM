@@ -1,0 +1,6 @@
+/* #wcfm-main-contentainer table{
+    color: tomato;
+} */
+#wcfm-main-contentainer table thead.gs-table-head{
+    color: yellow !important;
+}
