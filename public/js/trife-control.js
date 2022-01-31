@@ -153,9 +153,6 @@
       // passwordSpan.hide();
       let status = $('.product-status').html();
 
-
-     
-
       $('#wcfm-post-visibility-display').html(status);
 
       }
@@ -169,8 +166,36 @@
       })
       // change contents of span
       
-      
-      
+      let temlateCheckbox = $('#is_product_template');
+      let templateRadio =  $('.visibility-radio-template');
+      let publicRadio =  $('.visibility-radio-public')
+      temlateCheckbox.click(function() {
+        if($('#is_product_template').prop("checked") == true){
+          templateRadio.attr('checked', true)
+          publicRadio.prop('checked', false)
+        }else if($('#is_product_template').prop("checked") == false){
+          publicRadio.prop('checked', true)
+          templateRadio.prop('checked', false);
+
+        }
+
+       
+    });
+    // Auto set Template when template status is clicked
+    templateRadio.click(function(){
+      $('#is_product_template').prop("checked", true);
+    })
+    publicRadio.click(function () {
+      $('#is_product_template').prop("checked", false);
+      })
+    if(templateRadio.prop('checked')==true){
+      $('#is_product_template').prop("checked", true);
+    }else if(templateRadio.prop('checked')==false){
+      $('#is_product_template').prop("checked", false);
+    }
+  
+    
+
 
       // Toogle password field
       $('input[type="radio"]').click(function(){
@@ -187,10 +212,16 @@
         else{
           passwordSpan.hide()
         }
+        if(currentRadio == 'template'){
+          $('#is_product_template').prop("checked") == true
+        }
         
-        
+
          
       });
+
+
+
       //Save and replace value
       $('.wcfm-save-post-visibility').click(function(){
         visibilitySdiv.hide()
@@ -199,7 +230,10 @@
         visibilitySdiv.hide();
       })
     })
-    // Compare Admin Price
+    // Check Template Value
+
+    
+
    })( jQuery );
 
    

@@ -251,7 +251,7 @@ function update_printable_sku(){
     $user_args = array(
         'author'        =>  $current_user->ID, 
         'post_type'     =>  'product',
-        'status'       =>  array('publish','draft', 'pending', 'private', 'protected', 'future'),
+        'status'       =>  array('publish','draft', 'pending', 'private', 'protected', 'future', ),
         'posts_per_page' => -1 // no limit
       );
 
@@ -463,22 +463,17 @@ add_action('wcfm_product_manager_right_panel_before', 'add_high_resultion_image'
 
 function set_as_product_template ($product_id){
     global $wp, $WCFM, $wc_product_attributes;
-    // $printable_image_src = get_post_meta( $product_id, '_printable_image', true );
-    // // var_dump($printable_image_src);
-    // if($printable_image_src){
-    //     $src = $printable_image_src;
-    // }else{
-    //     $src = plugin_dir_url(__FILE__) . '../../includes/libs/uploads/images/Placeholder.png';
-    // }
 
     $user = wp_get_current_user();
     if($user->roles==['administrator']){
+            $is_product_template = ( get_post_meta( $product_id, '_is_product_tamplate', true) == 'enable' ) ? 'enable' : '';
             $WCFM->wcfm_fields->wcfm_generate_form_field(array(
                 "is_product_template" => array('desc' => __('Set as Product Template', 'wc-frontend-manager') , 
                 'type' => 'checkbox', 
                 'class' => 'wcfm-checkbox wcfm_ele wcfm_half_ele_checkbox simple booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking non-pw-gift-card', 
                 'desc_class' => 'padded-paragraph wcfm_title wcfm_ele virtual_ele_title checkbox_title simple booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking non-pw-gift-card',
                 'value' => 'enable', 
+                'dfvalue'=>$is_product_template,
                 ))) ;
                   
             } 
@@ -486,14 +481,22 @@ function set_as_product_template ($product_id){
               
 }
 
+function save_as_product_template($new_product_id, $wcfm_products_manage_form_data){
+    $is_product_template = $wcfm_products_manage_form_data['is_product_template'];
+    if($is_product_template){
+        update_post_meta($new_product_id, '_is_product_tamplate', 'enable');
+        wp_update_post(array(
+            'ID'    =>  $new_product_id,
+            'post_status'   =>  'Template'
+            ));
+    }else{
+        delete_post_meta($new_product_id, '_is_product_tamplate', 'enable');
+    }
+}
 
+add_action('wcfm_product_manager_left_panel_before', 'set_as_product_template', 10, 2);
 
-
-    add_action('wcfm_product_manager_left_panel_before', 'set_as_product_template', 10, 2);
-
-
-
-
+add_action( 'after_wcfm_products_manage_meta_save', 'save_as_product_template', 10, 2 );
 
 
 add_action( 'after_wcfm_products_manage_meta_save', 'save_new_field_values', 10, 2 );
@@ -521,7 +524,7 @@ function wcfm_add_product_password($product_id){
 					<input type="hidden" name="hidden_post_password" id="hidden-post-password" value="">
 					
 					<input type="hidden" name="hidden_post_visibility" id="hidden-post-visibility"  value="public" >
-					<input type="radio" name="visibility" id="visibility-radio-public visbility-radio" value="publish"
+					<input type="radio" name="visibility" class='visibility-radio-public' id="visibility-radio-public visbility-radio" value="publish"
                         <?php if($status != 'private' || $password == '' ){
                             echo 'checked';
                         }?>
@@ -552,11 +555,18 @@ function wcfm_add_product_password($product_id){
                             
                     </span>
 					<input type="radio" name="visibility" id="visibility-radio-private visbility-radio" 
-                    <?php if($status == 'private'){
+                    <?php 
+                        if($status == 'private'){
                             echo 'checked';
                         }?>
                     value="private"> <label for="visibility-radio-private" style="padding-bottom: 10px;" class="selectit">Private</label><br>
-
+                    
+                    <input type="radio" name="visibility" class='visibility-radio-template' id="visibility-radio-template visbility-radio" 
+                    <?php 
+                        if($status == 'template'){
+                            echo 'checked';
+                        }?>
+                    value="template"> <label for="visibility-radio-template" style="padding-bottom: 10px;" class="selectit">Template</label><br>
 					<p>
 						<a href="#visibility" class="wcfm-save-post-visibility wcfm-hide-if-no-js button">OK</a>
 						<a href="#visibility" class="wcfm-cancel-post-visibility wcfm-hide-if-no-js button-cancel">Cancel</a>
@@ -571,7 +581,7 @@ function wcfm_add_product_password($product_id){
 function save_password_field_values( $new_product_id, $wcfm_products_manage_form_data ) {
     $is_visibility = $wcfm_products_manage_form_data['visibility'];
     $has_product_password = $wcfm_products_manage_form_data['post_password'];
-
+    $is_product_template = $wcfm_products_manage_form_data['is_product_template'];
     if($is_visibility == 'password'){
         $pass_arg = array(
             'ID'            => $new_product_id,
@@ -592,6 +602,12 @@ function save_password_field_values( $new_product_id, $wcfm_products_manage_form
         $terms = array( 'exclude-from-search', 'exclude-from-catalog' ); // for hidden..
         wp_set_post_terms( $new_product_id, $terms, 'product_visibility', false ); 
         
+    }else if($is_visibility == 'template'){
+        wp_update_post(array(
+            'ID'            => $new_product_id,
+            'post_status'=> 'template'
+        ));
+        update_post_meta($new_product_id, '_is_product_tamplate', 'enable');
     }else if($is_visibility != 'password'){
         $arg = array(
             'ID'            => $new_product_id,
@@ -601,6 +617,7 @@ function save_password_field_values( $new_product_id, $wcfm_products_manage_form
         );
         wp_update_post($arg);
         delete_post_meta($new_product_id, '_post_dwp', '');
+        delete_post_meta($new_product_id, '_is_product_tamplate', '');
         $terms = array( 'exclude-from-search', 'exclude-from-catalog' ); // for hidden..
         wp_set_post_terms( $new_product_id, $terms, 'product_visibility', false );
         wp_remove_object_terms($new_product_id, $terms, 'product_visibility');
@@ -620,7 +637,25 @@ function wpdocs_custom_post_status(){
         'label_count'               => _n_noop( 'Protected <span class="count">(%s)</span>', 'Protected <span class="count">(%s)</span>' ),
     ) );
 }
+
 add_action( 'init', 'wpdocs_custom_post_status' );
+
+// Register Template Post Stattus
+// Register Custom Status
+function register_template_status() {
+
+	$args = array(
+		'label'                     => _x( 'Template', 'Status General Name', 'trifie' ),
+		'label_count'               => _n_noop( 'Template (%s)',  'Templates (%s)', 'trifie' ), 
+		'public'                    => false,
+		'show_in_admin_all_list'    => false,
+		'show_in_admin_status_list' => false,
+		'exclude_from_search'       => true,
+	);
+	register_post_status( 'Template', $args );
+
+}
+add_action( 'init', 'register_template_status', 0 );
 
 add_action( 'after_wcfm_products_manage_meta_save', 'save_password_field_values', 10, 2 );
 
