@@ -461,6 +461,40 @@ function add_high_resultion_image ($product_id){
 
 add_action('wcfm_product_manager_right_panel_before', 'add_high_resultion_image', 10, 2);
 
+function set_as_product_template ($product_id){
+    global $wp, $WCFM, $wc_product_attributes;
+    // $printable_image_src = get_post_meta( $product_id, '_printable_image', true );
+    // // var_dump($printable_image_src);
+    // if($printable_image_src){
+    //     $src = $printable_image_src;
+    // }else{
+    //     $src = plugin_dir_url(__FILE__) . '../../includes/libs/uploads/images/Placeholder.png';
+    // }
+
+    $user = wp_get_current_user();
+    if($user->roles==['administrator']){
+            $WCFM->wcfm_fields->wcfm_generate_form_field(array(
+                "is_product_template" => array('desc' => __('Set as Product Template', 'wc-frontend-manager') , 
+                'type' => 'checkbox', 
+                'class' => 'wcfm-checkbox wcfm_ele wcfm_half_ele_checkbox simple booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking non-pw-gift-card', 
+                'desc_class' => 'padded-paragraph wcfm_title wcfm_ele virtual_ele_title checkbox_title simple booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking non-pw-gift-card',
+                'value' => 'enable', 
+                ))) ;
+                  
+            } 
+
+              
+}
+
+
+
+
+    add_action('wcfm_product_manager_left_panel_before', 'set_as_product_template', 10, 2);
+
+
+
+
+
 
 add_action( 'after_wcfm_products_manage_meta_save', 'save_new_field_values', 10, 2 );
 
