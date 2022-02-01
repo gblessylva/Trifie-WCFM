@@ -56,7 +56,7 @@ class Trife_Public {
 		require plugin_dir_path( __FILE__ ) .'partials/class-create-cpt.php';
 		require plugin_dir_path( __FILE__ ) . 'partials/class-cpt-custom-fields.php';	
 		require  plugin_dir_path( __FILE__ ) . 'prodigi-cpt/prodigi-cpt-core.php';
-		// require  plugin_dir_path( __FILE__ ) . 'partials/includes/class-template-controller.php';	
+		require  plugin_dir_path( __FILE__ ) . 'partials/includes/class-import-product-templates-csv.php';	
 		require  plugin_dir_path( __FILE__ ) . 'partials/class-create-new-product-menu.php';
 
 		$this->plugin_name = $plugin_name;
