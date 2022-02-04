@@ -611,7 +611,7 @@ function save_password_field_values( $new_product_id, $wcfm_products_manage_form
     }else if($is_visibility != 'password'){
         $arg = array(
             'ID'            => $new_product_id,
-            'post_status'   => $is_visibility,
+            // 'post_status'   => $is_visibility,
             'post_password' => '',
             'post_name'     => sanitize_title( $wcfm_products_manage_form_data['post_title'] ),
         );

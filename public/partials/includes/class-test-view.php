@@ -33,7 +33,7 @@ global $WCFM, $wp_query;
 			
 			if( $has_new = apply_filters( 'wcfm_add_new_cpt1_sub_menu', true ) ) {
 				if ($allow_wp_admin_view = apply_filters( 'wcfm_allow_wp_admin_view', true )) {
-					echo '<a id="add_new_cpt1_dashboard" class="add_new_wcfm_ele_dashboard text_tip" href="'.get_site_url().'/store-manager/add-brand" data-tip="' . __('Add New ' , 'wcfm-custom-menus') . '"><span class="fa fa-cube"></span><span class="text">' . __( 'Add New', 'wcfm-custom-menus') . '</span></a>';
+					echo '<a id="add_new_cpt1_dashboard" class="add_new_wcfm_ele_dashboard text_tip" href="'.get_site_url().'/store-manager/product-manage" data-tip="' . __('Add New ' , 'wcfm-custom-menus') . '"><span class="fa fa-cube"></span><span class="text">' . __( 'Add New', 'wcfm-custom-menus') . '</span></a>';
 				}
 				
 			}
@@ -71,8 +71,8 @@ global $WCFM, $wp_query;
 							<th><?php _e( 'Taxonomies', 'wc-frontend-manager' ); ?></th>
 							<th><span class="wcfmfa fa-cubes text_tip" data-tip="<?php _e( 'Type', 'wc-frontend-manager' ); ?>"></span></th>
 							<th><span class="wcfmfa fa-eye text_tip" data-tip="<?php _e( 'Views', 'wc-frontend-manager' ); ?>"></span></th>
-							<th><?php _e( 'Date', 'wc-frontend-manager' ); ?></th>
-							<th><?php echo apply_filters( 'wcfm_sold_by_label', '', __( 'Store', 'wc-frontend-manager' ) ); ?></th>
+							<th><?php _e( 'Printable SKU', 'wc-frontend-manager' ); ?></th>
+							<th><?php _e( 'Min Price', 'wc-frontend-manager' ); ?></th>
 							<th><?php _e( apply_filters( 'wcfm_products_additional_info_column_label', __( 'Additional Info', 'wc-frontend-manager' ) ) ); ?></th>
 							<th><?php _e( 'Actions', 'wc-frontend-manager' ); ?></th>
 						</tr>
@@ -95,8 +95,8 @@ global $WCFM, $wp_query;
 							<th><?php _e( 'Taxonomies', 'wc-frontend-manager' ); ?></th>
 							<th><span class="wcfmfa fa-cubes text_tip" data-tip="<?php _e( 'Type', 'wc-frontend-manager' ); ?>"></span></th>
 							<th><span class="wcfmfa fa-eye text_tip" data-tip="<?php _e( 'Views', 'wc-frontend-manager' ); ?>"></span></th>
-							<th><?php _e( 'Date', 'wc-frontend-manager' ); ?></th>
-							<th><?php echo apply_filters( 'wcfm_sold_by_label', '', __( 'Store', 'wc-frontend-manager' ) ); ?></th>
+							<th><?php _e( 'Printable SKU', 'wc-frontend-manager' ); ?></th>
+							<th><?php _e( 'Min Price', 'wc-frontend-manager' ); ?></th>
 							<th><?php _e( apply_filters( 'wcfm_products_additional_info_column_label', __( 'Additional Info', 'wc-frontend-manager' ) ) ); ?></th>
 							<th><?php _e( 'Actions', 'wc-frontend-manager' ); ?></th>
 						</tr>

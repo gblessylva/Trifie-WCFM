@@ -68,9 +68,8 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 
 == Changelog ==
 
-= 1.0 =
-* A change since the previous version.
-* Another change.
+= 1.0.15 =
+* Fixed Vendors products skipping review
 
 = 0.5 =
 * List versions from most recent at top to oldest at bottom.

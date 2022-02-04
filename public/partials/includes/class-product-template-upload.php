@@ -10,7 +10,7 @@ global $WCFM, $wp_query;
 	
 	<div class="wcfm-page-headig">
 		<span class="fa fa-cubes"></span>
-		<span class="wcfm-page-heading-text"><?php _e('Prodigi Templates', 'wcfm-custom-menus' ); ?></span>
+		<span class="wcfm-page-heading-text"><?php _e('Product Templates', 'wcfm-custom-menus' ); ?></span>
 		<?php do_action( 'wcfm_page_heading' ); ?>
 	</div>
 	<div class="wcfm-collapse-content">
@@ -18,7 +18,7 @@ global $WCFM, $wp_query;
 		<?php do_action( 'before_wcfm_brands' ); ?>
 		
 		<div class="wcfm-container wcfm-top-element-container">
-			<h2><?php _e('Upload Prodigi Templates', 'wcfm-custom-menus' ); ?></h2>
+			<h2><?php _e('Upload Product Templates', 'wcfm-custom-menus' ); ?></h2>
 			<div class="wcfm-clearfix"></div>
 
 			
@@ -59,10 +59,11 @@ if(isset($_POST['import-template'])){
   global $current_user;
   wp_get_current_user() ;
   $username = $current_user->user_login;
+  $total = '';
 
  while (($row = fgetcsv($handle, 1000, ",")) !== FALSE) 
   {
-
+	// var_dump(count($row));
       $product_name = trim( $row[0]);
       $short_description = trim( $row[1]);
       $long_description = trim($row[2]);
@@ -132,17 +133,24 @@ if(isset($_POST['import-template'])){
 			// $_product_attributes = get_post_meta($template_id, '_product_attributes', TRUE);
 			//Updating the Post Meta
 			// $res = update_post_meta($template_id, '_product_attributes', array_merge( $updated_attributes));
-			var_dump($updated_attributes);
+			// var_dump($updated_attributes);
 			$res= update_post_meta( $template_id, '_product_attributes', $updated_attributes);
-			var_dump($res);
-			
+			// var_dump($res);
+
 		  }
+
+		  add_filter('after-template-form', function(){
+			echo '<div  style="background: #d4edda; width:100%; display:flex; font-size: 16px; margin: 0 auto; justify-content: center; align-items:center;  border-radius: 10px;  border-color: #c3e6cb; color:#155724; padding:10px;">
+			<p>Product Templates were added Successfully </p>
+		  </div>';
+		  });
+		  
 		 
 	}
 	
 
 	  }
-    //   echo $template_id;
+    
 
 
 }
