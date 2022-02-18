@@ -142,6 +142,14 @@ function wcfm_csm_load_scripts( $end_point ) {
             wp_localize_script( 'clone-template', 'CloneAjax', array(
                 'ajaxurl' => admin_url( 'admin-ajax.php' ),
               ));
+
+// Load delete script
+
+wp_enqueue_script( 'delete-product-template', $plugin_url .'../js/delete-product-template.js', array( 'jquery' ), $WCFM->version, true );
+wp_localize_script( 'delete-product-template', 'DeleteAjax', array(
+    'ajaxurl' => admin_url( 'admin-ajax.php' ),
+  ));
+            
 		break;
         case 'product-template-upload' :
             wp_enqueue_script( 'template-upload-checker',  $plugin_url .'../js/template-upload-checker.js', array( 'jquery' ), $WCFM->version, true );
@@ -540,13 +548,14 @@ function prodigi_load_templates(){
             
             // Action
             $actions = '';
+            $delete_nonce = wp_create_nonce('delete_template_nonce');
             
             if( apply_filters( 'wcfm_is_allow_view_product', true ) ) {
                 $actions .= '<a class="wcfm-action-icon" target="_blank" href="' . apply_filters( 'wcfm_product_preview_url', get_permalink( $wcfm_products_single->ID ) ) . '"><span class="wcfmfa fa-eye text_tip" data-tip="' . esc_attr__( 'View', 'wc-frontend-manager' ) . '"></span></a>';
             }
 
             $actions .= '<a class="clone-template wcfm-action-icon" href="#" data-id="' . $wcfm_products_single->ID . '"><span class="wcfmfa fa-copy text_tip" data-tip="' . esc_attr__( 'Clone Template', 'wc-frontend-manager' ) . '"></span></a>';
-            $actions .= ( apply_filters( 'wcfm_is_allow_delete_products', true ) && apply_filters( 'wcfm_is_allow_delete_specific_products', true, $wcfm_products_single->ID ) ) ? '<a class="wcfm-action-icon wcfm_product_delete" href="#" data-proid="' . $wcfm_products_single->ID . '"><span class="wcfmfa fa-trash-alt text_tip" data-tip="' . esc_attr__( 'Delete', 'wc-frontend-manager' ) . '"></span></a>' : '';
+            $actions .= ( apply_filters( 'wcfm_is_allow_delete_products', true ) && apply_filters( 'wcfm_is_allow_delete_specific_products', true, $wcfm_products_single->ID ) ) ? '<a class="wcfm-action-icon wcfm_product_delete" href="#" data-nonce="'.$delete_nonce .'" data-proid="' . $wcfm_products_single->ID . '"><span class="wcfmfa fa-trash-alt text_tip" data-tip="' . esc_attr__( 'Delete', 'wc-frontend-manager' ) . '"></span></a>' : '';
             $wcfm_products_json_arr[$index][] =  apply_filters ( 'wcfm_products_actions',  $actions, $the_product );
             
             
@@ -565,6 +574,31 @@ function prodigi_load_templates(){
 
 add_action('wp_ajax_clone_prodigi_template', 'clone_prodigi_template');
 add_action('wp_ajax_no_priv_clone_prodigi_template','clone_prodigi_template');
+
+add_action( 'wp_ajax_delete_product_template', 'delete_product_template' );
+add_action( 'wp_ajax_no_priv_delete_product_template', 'delete_product_template' );
+
+
+
+function delete_product_template(){
+    // wp_delete_post( $_REQUEST['id'] );
+    $permission = check_ajax_referer( 'delete_template_nonce', 'nonce', false );
+    if(!$permission){
+        echo 'Post not deleted, and error occured';
+        wp_die();
+    }else{
+        $post_id = $_REQUEST['id'];
+        wp_update_post(array(
+            'ID'    =>  $post_id,
+            'post_status'   =>  'draft'
+            ));
+        wp_delete_post( $post_id, true );
+        echo 'Product Template '.$post_id.' Deleted Successfully';
+        wp_die();
+    }
+}
+
+
 
 
 

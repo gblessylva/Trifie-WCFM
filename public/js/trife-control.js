@@ -1,34 +1,6 @@
 (function( $ ) {
 	'use strict';
 
-	/**
-	 * All of the code for your public-facing JavaScript source
-	 * should reside in this file.
-	 *
-	 * Note: It has been assumed you will write jQuery code here, so the
-	 * $ function reference has been prepared for usage within the scope
-	 * of this function.
-	 *
-	 * This enables you to define handlers, for when the DOM is ready:
-	 *
-	 * $(function() {
-	 *
-	 * });
-	 *
-	 * When the window is loaded:
-	 *
-	 * $( window ).load(function() {
-	 *
-	 * });
-	 *
-	 * ...and/or other possibilities.
-	 *
-	 * Ideally, it is not considered best practise to attach more than a
-	 * single DOM-ready or window-load handler for a particular page.
-	 * Although scripts in the WordPress core, Plugins and Themes may be
-	 * practising this, we should strive to set a better example in our own work.
-	 */
-
      jQuery(document).ready(function($){
 
         var mediaUploader;
@@ -50,20 +22,58 @@
           // When a file is selected, grab the URL and set it as the text field's value
           mediaUploader.on('select', function() {
             let attachment = mediaUploader.state().get('selection').first().toJSON();
-            // console.log(attachment.filename);
 
             let fileInput = $('#_printable_image');
-            // console.log(fileInput);
+            
             $('#high-res').attr("src", attachment.url);
-            console.log($('#high-res'));
+           
             $('#_printable_image').val(attachment.url);
+
+           
+            if( $('#_printable_image').val() != ''){
+              // deleteBTN.remove()
+            let  content  = " <span id='delete-printable-image' style='background: black; font-size: 16px; color:white; padding:5px 10px; cursor: pointer; position: absolute' class='wcfm-button' > REMOVE </span>"
+          
+            $('#printable-image-selector').after(content);
+            
+            let deleteBTN = $('#delete-printable-image')
+            deleteBTN.click(function (e) { 
+              e.preventDefault();
+              fileInput.val('') ;
+              $('#high-res').attr("src", '');
+                deleteBTN.remove();
+            });
+
+          // .................
+              
+            }
           });
           // Open the uploader dialog
           mediaUploader.open();
+    
         });
       
+        let fileInput = $('#_printable_image');
+        if(fileInput.val() != ''){
+              // deleteBTN.remove()
+            let  content  = " <span id='delete-printable-image' style='background: black; font-size: 16px; color:white; padding:5px 10px; cursor: pointer; position: absolute' class='wcfm-delete-btn' > REMOVE </span>"
+          
+            $('#printable-image-selector').after(content);
+            let deleteBTN = $('#delete-printable-image')
+            deleteBTN.click(function (e) { 
+              e.preventDefault();
+              fileInput.val('') ;
+              $('#high-res').attr("src", '');
+                deleteBTN.remove();
+            });
+
+        }
+        
+     
+
       });
 
+      
 
     $(document).ready(function(){
         let skuinput= $('#sku');
@@ -122,19 +132,9 @@
 
 
 
-// // Update SKU
-//     $(document).ready(function(){
-//         let skuinput= $('#sku');
-//         $('#_printable_sku').change(function(){
-//             let selectInput = $('#_printable_sku').val();
-//             skuinput.val(selectInput)
-//         })
-//     });
-
-
-
     // Function to toogle Public, Private and Passworded views
     $(document).ready(function(){
+
       let visibilitySdiv = $('#wcfm-post-visibility-select');
       let passwordSpan = $('#wcfm-password-span');
       // hide visibility div
@@ -230,10 +230,51 @@
         visibilitySdiv.hide();
       })
     })
-    // Check Template Value
 
+   
+    // Check Template Value
+      $('#product_type').change(function(){
+        let productType = $('#product_type');
+        if(productType.val()=='variable'){
+          $('#_printable_sku_field').hide()
+          $('._printable_sku_field').hide()
+          $('._admin_min_price').hide()
+          $('#_admin_min_price').hide()
+        }
+      })
     
 
    })( jQuery );
 
    
+let variablePricingField = document.querySelectorAll('[data-name="regular_price"]');
+let adminMinPrice = document.querySelectorAll('[data-name="_admin_min_price"]');
+let sale_price = document.querySelectorAll('[data-name="sale_price"]');
+let errorHolder = document.querySelectorAll('.regular_variation_price');
+
+
+variablePricingField.forEach((field)=>{
+  adminMinPrice.forEach((price)=>{
+    field.addEventListener('change', (e)=>{
+      if(parseInt(field.value) <= parseInt(price.value)){
+        errorHolder.forEach((error)=>{
+          error.innerHTML = "<span class='error-message'>The Price must be greater than the Minimum Price. / 商品価格（Price）は最低価格（Min Product Price）より大きい数字にしてください</span>";
+
+        })
+       
+
+
+      }
+ 
+    })
+    
+    
+  })
+  // Loop sales Price
+
+  sale_price.forEach((sales)=>{
+
+  })
+  
+})
+

@@ -222,8 +222,12 @@ function add_normal_templated_field( $fields, $product_id, $product_type, $wcfm_
          );
             
         }
+
+
+        if($product_type != 'variable'){
        
          return array_slice( $fields, 0, 4, true ) + $new_field + array_slice( $fields, 4, count( $fields ) - 4, true );
+        }
             
     }
 
@@ -311,7 +315,7 @@ function add_copied_templated_field( $fields, $product_id, $product_type, $wcfm_
     array( 'desc' => __( 'Printable Product SKU', 'wc-frontend-manager' ), 
     'type' => 'select', 
     'label'=> 'Printable Product SKU',
-    'class' => 'wcfm-select wcfm-printable wcfm_ele wcfm_product_type  simple non-booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking' . ' ' . $wcfm_wpml_edit_disable_element,
+    'class' => 'wcfm-select wcfm-printable wcfm_ele wcfm_product_type  simple variable external grouped booking' . ' ' . $wcfm_wpml_edit_disable_element,
     'desc_class' => 'wcfm_title wcfm_ele virtual_ele_title checkbox_title simple non-booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking' . ' ' . $wcfm_wpml_edit_disable_element, 
     'value' =>  $prodigi_sku,
     'options'  => array( $prodigi_sku => $prodigi_sku),
@@ -335,7 +339,7 @@ function add_file_upload_fields($fields, $product_id, $product_type, $wcfm_is_tr
         'value'=> $printable_image_src,
         "attributes" => array( "readonly" => true ),
         'id'=>'_printable_image',
-        'class'=> 'wcfm-hidden _printable_sku wcfm-printable wcfm_ele wcfm_product_type  simple non-booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking',
+        'class'=> 'wcfm-hidden _printable_sku wcfm-printable wcfm_ele wcfm_product_type  simple variable external grouped booking',
         
         ),
     );
@@ -346,6 +350,8 @@ function add_file_upload_fields($fields, $product_id, $product_type, $wcfm_is_tr
 // Display Min Price
 function add_min_price_fields($fields, $product_id, $product_type, $wcfm_is_translated_product, $wcfm_wpml_edit_disable_element){
     $prodigi_product = $_GET['prodigi-id'];
+    // var_dump($product_type);
+
     $has_admin_price = get_post_meta($prodigi_product, 'trifie_product_min_price', true);
     $saved_admin_price = get_post_meta($product_id, 'trifie_product_min_price', true);
     $currency = get_woocommerce_currency_symbol();
@@ -358,7 +364,7 @@ function add_min_price_fields($fields, $product_id, $product_type, $wcfm_is_tran
             'value'=> $has_admin_price,
             "attributes" => array( "readonly" => true ),
             'id'=>'_admin_min_price',
-            'class'=> 'wcfm-text wcfm_ele wcfm_non_negative_input wcfm_half_ele simple external non-subscription non-variable-subscription non-auction non-redq_rental non-accommodation-booking non-lottery non-pw-gift-card',
+            'class'=> 'wcfm-text wcfm_ele wcfm_non_negative_input wcfm_half_ele simple simple external grouped booking',
             
             ),
         );
@@ -391,12 +397,15 @@ function add_min_price_fields($fields, $product_id, $product_type, $wcfm_is_tran
         'value'=> $set_min_price,
         "attributes" => array( "readonly" => true ),
         'id'=>'_admin_min_price',
-        'class'=> 'wcfm-text wcfm_ele wcfm_non_negative_input wcfm_half_ele simple external non-subscription non-variable-subscription non-auction non-redq_rental non-accommodation-booking non-lottery non-pw-gift-card',
+        'class'=> 'wcfm-text wcfm_ele wcfm_non_negative_input wcfm_half_ele simple  external grouped booking',
         
         ),
     );
 }
-    return array_slice( $fields, 0, 5, true ) + $new_field + array_slice( $fields, 5, count( $fields ) - 5, true );
+    if($product_type != 'variable'){
+        return array_slice( $fields, 0, 5, true ) + $new_field + array_slice( $fields, 5, count( $fields ) - 5, true );
+    }
+    
 };
 
 
@@ -408,6 +417,7 @@ if(isset($_GET['prodigi-id'])){
 }
 
 add_filter( 'wcfm_product_manage_fields_general', 'add_file_upload_fields', 9, 6 );
+
 add_filter('wcfm_product_manage_fields_pricing', 'add_min_price_fields', 90, 6);
 
 // // Saving product fields
@@ -446,7 +456,8 @@ function add_high_resultion_image ($product_id){
         if($printable_image_src){
             $src = $printable_image_src;
         }else{
-            $src = plugin_dir_url(__FILE__) . '../../includes/libs/uploads/images/Placeholder.png';
+            $src = '';
+            // plugin_dir_url(__FILE__) . '../../includes/libs/uploads/images/Placeholder.png';
         }
 
     echo "
@@ -454,8 +465,9 @@ function add_high_resultion_image ($product_id){
         <h4> Select Full Resolution Image </h3>
         <img src='$src' id='high-res'>
         <button id='printable-image-selector' class='wcfm-button'> Select Image </button> 
-        </div>
-    ";
+            </div>
+        ";
+        
 }
 
 
@@ -470,8 +482,8 @@ function set_as_product_template ($product_id){
             $WCFM->wcfm_fields->wcfm_generate_form_field(array(
                 "is_product_template" => array('desc' => __('Set as Product Template', 'wc-frontend-manager') , 
                 'type' => 'checkbox', 
-                'class' => 'wcfm-checkbox wcfm_ele wcfm_half_ele_checkbox simple booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking non-pw-gift-card', 
-                'desc_class' => 'padded-paragraph wcfm_title wcfm_ele virtual_ele_title checkbox_title simple booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking non-pw-gift-card',
+                'class' => 'wcfm-checkbox wcfm_ele wcfm_half_ele_checkbox simple booking variable variable-subscription', 
+                'desc_class' => 'padded-paragraph wcfm_title wcfm_ele virtual_ele_title checkbox_title simple booking variable variable-subscription',
                 'value' => 'enable', 
                 'dfvalue'=>$is_product_template,
                 ))) ;
@@ -495,6 +507,7 @@ function save_as_product_template($new_product_id, $wcfm_products_manage_form_da
 }
 
 add_action('wcfm_product_manager_left_panel_before', 'set_as_product_template', 10, 2);
+// add_filter('wcfm_products_manage_variable_start', 'set_as_product_template',1, 1);
 
 add_action( 'after_wcfm_products_manage_meta_save', 'save_as_product_template', 10, 2 );
 

@@ -54,6 +54,7 @@ jQuery(document).ready(function($){
             									],
                 ajax: {
                         type   : "POST",
+						caching: false,
                         url    : '/wp-admin/admin-ajax.php?action=datatables_endpoint',
                                                     
                                                     "complete" : function () {

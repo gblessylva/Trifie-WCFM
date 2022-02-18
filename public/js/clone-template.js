@@ -33,28 +33,7 @@ jQuery(document).ready(function($){
         return false;
 
     } )
+
+   
 })
 
-
-
-//  Auto Update Printable SKU
-// $(document).ready(function() {
-//     $('#_printable_sku_field').select2();
-//     $('#_printable_sku_field').change(function(){
-//       // $('#sku').val($(this).val());
-//       // console.log($(this).val());
-
-//       $.ajax({
-//         type: "post",
-//         url: CloneAjax.ajaxurl,
-//         data: {
-//           action: "update_printable_sku",
-          
-//         },
-//         success: function (response) {
-//           console.log(response, 'not working');
-//         }
-//       });
-//     });
-    
-// });
