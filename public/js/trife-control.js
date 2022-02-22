@@ -170,12 +170,16 @@
       let templateRadio =  $('.visibility-radio-template');
       let publicRadio =  $('.visibility-radio-public')
       temlateCheckbox.click(function() {
+        
         if($('#is_product_template').prop("checked") == true){
+          $('#template_value').val('enabled')
           templateRadio.attr('checked', true)
           publicRadio.prop('checked', false)
+         
         }else if($('#is_product_template').prop("checked") == false){
           publicRadio.prop('checked', true)
           templateRadio.prop('checked', false);
+          $('#template_value').val('')
 
         }
 

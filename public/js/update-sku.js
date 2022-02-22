@@ -26,7 +26,14 @@ jQuery(document).ready(function($){
                         $('#_admin_min_price').val( single_prodigi_min_cost);
                         // $('#regular_price').val(single_prodigi_min_cost);
                         let newSku = author + '-' + single_prodigi_id + '-' + total_vendor_products;
-                        $('#sku').val(newSku); 
+                        let checkbox = $('#is_product_template').is(':checked');
+
+                        if(checkbox){
+                          $('#sku').val("");
+                        }else{
+                          $('#sku').val(newSku);
+                        }
+                         
                     },
                     complete: function(){
                         $('#loader').addClass('hidden')
@@ -81,6 +88,9 @@ jQuery(document).ready(function($){
           });
 
         })
+        
+        
+      
 
         $('#update_printable_sku').click(function(){
 
@@ -123,7 +133,14 @@ jQuery(document).ready(function($){
 
         })
 
-
+  
+        $('#is_product_template').click(function() {
+          if($('#is_product_template').prop("checked") == true){
+            
+            
+          }
+        
+        })
       
 
     })

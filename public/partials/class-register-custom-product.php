@@ -445,8 +445,14 @@ function save_new_field_values( $new_product_id, $wcfm_products_manage_form_data
 }
 
 function wcfm_required_product_fields_pricing( $price_fields, $product_id, $product_type ) {
-	if( isset( $price_fields['regular_price'] ) )  { $price_fields['regular_price']['custom_attributes'] = array( 'required' => 1 ); }
-	return $price_fields;
+	$is_product_template = $POST['template_value'];
+    $user = wp_get_current_user();
+    if($user->roles !=['administrator']){
+        if( isset( $price_fields['regular_price'] ) )  { $price_fields['regular_price']['custom_attributes'] = array( 'required' => 1 ); }
+
+    }
+ 
+    return $price_fields;
 }
 add_filter( 'wcfm_product_manage_fields_pricing', 'wcfm_required_product_fields_pricing', 50, 3 );
 
@@ -484,9 +490,16 @@ function set_as_product_template ($product_id){
                 'type' => 'checkbox', 
                 'class' => 'wcfm-checkbox wcfm_ele wcfm_half_ele_checkbox simple booking variable variable-subscription', 
                 'desc_class' => 'padded-paragraph wcfm_title wcfm_ele virtual_ele_title checkbox_title simple booking variable variable-subscription',
-                'value' => 'enable', 
+                'value' => $is_product_template, 
                 'dfvalue'=>$is_product_template,
-                ))) ;
+            ),
+            "template_value" => array( 
+                'type' => 'hidden', 
+                'class' => 'wcfm-text wcfm_ele wcfm_half_ele_checkbox simple booking variable variable-subscription', 
+                'value' => '', 
+            )
+            )
+            ) ;
                   
             } 
 
@@ -678,3 +691,4 @@ wp_enqueue_script( 'admin-page-script', plugin_dir_url( __FILE__ ) . '../js/trif
 wp_enqueue_script('select2-script', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',  array('jquery'), '4.1.0', true);
 wp_enqueue_style('select2-styles', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',);
 wp_enqueue_style('manager-styles',plugin_dir_url(__FILE__) . '../js/trife-manager.css');
+
