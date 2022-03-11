@@ -90,7 +90,15 @@ jQuery(document).ready(function($){
         })
         
         
-      
+        function generateRandomSKU(n){
+          let randomString = '';
+          let characters = 'ABCDEFGHIJKLMNOPQRWSYZ1234567890';
+          for(i = 0; i<n; i++){
+            randomString += characters[Math.floor(Math.random()*characters.length)];
+          }
+
+          return randomString;
+        }
 
         $('#update_printable_sku').click(function(){
 
@@ -121,9 +129,12 @@ jQuery(document).ready(function($){
                 skuField = $('[data-name="sku"]')
               skuField.each(function (indexOfSKU, singleVariableSKU) { 
                 indexOfSKU +=1
-                let newSku = author + '-' + single_prodigi_id + '-' + total_vendor_products +'-'+ indexOfSKU;
+                let randomString = generateRandomSKU(4)
+                let newSku = author + '-' + single_prodigi_id + '-'+randomString+'-' + total_vendor_products+'-'+ indexOfSKU;
+                
                 singleVariableSKU.value = newSku;
-                // console.log(singleVariableSKU.value);
+                
+               
               });
             },
             complete: function(){
