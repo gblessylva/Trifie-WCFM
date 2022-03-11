@@ -1,7 +1,19 @@
 
 
 jQuery(document).ready(function($){
+  function generateRandomSKU(n){
+    let randomString = '';
+    let characters = 'ABCDEFGHIJKLMNOPQRWSYZ1234567890';
+    for(i = 0; i<n; i++){
+      randomString += characters[Math.floor(Math.random()*characters.length)];
+    }
+
+    return randomString;
+  }
+
     $(document).ready(function() {
+      
+
         $('#_printable_sku_field').change(function(){
             
           $.ajax({
@@ -25,7 +37,8 @@ jQuery(document).ready(function($){
                       const {single_prodigi_cost, single_prodigi_id, single_prodigi_min_cost } = product;
                         $('#_admin_min_price').val( single_prodigi_min_cost);
                         // $('#regular_price').val(single_prodigi_min_cost);
-                        let newSku = author + '-' + single_prodigi_id + '-' + total_vendor_products;
+                        randomString = generateRandomSKU(5);
+                        let newSku = author + '-' + single_prodigi_id+ '-'+randomString + '-' + total_vendor_products;
                         let checkbox = $('#is_product_template').is(':checked');
 
                         if(checkbox){
@@ -77,7 +90,8 @@ jQuery(document).ready(function($){
             
               adminField.val( single_prodigi_min_cost);
                 // $('#regular_price').val(single_prodigi_min_cost);
-                let newSku = author + '-' + single_prodigi_id + '-' + total_vendor_products;
+                let randomString = generateRandomSKU(4)
+                let newSku = author + '-' + single_prodigi_id + '-'+ randomString + '-' + total_vendor_products;
                 skuField = $('[data-name="sku"]')
                 console.log(skuField)
                 skuField.val(newSku); 
@@ -90,15 +104,7 @@ jQuery(document).ready(function($){
         })
         
         
-        function generateRandomSKU(n){
-          let randomString = '';
-          let characters = 'ABCDEFGHIJKLMNOPQRWSYZ1234567890';
-          for(i = 0; i<n; i++){
-            randomString += characters[Math.floor(Math.random()*characters.length)];
-          }
-
-          return randomString;
-        }
+       
 
         $('#update_printable_sku').click(function(){
 
