@@ -247,6 +247,24 @@
         }
       })
     
+      // Update cart price
+
+      $("#prodigi_shipping").change(function() {
+        console.log(this.value);
+       
+
+      $.ajax({
+        url: '/wp-admin/admin-ajax.php',
+        type: 'POST',
+        data: {
+          action: 'get_prodigi_quote',
+          shipping_price: this.value
+        },
+      }).done(function(data){
+        console.log(data);
+        $('body').trigger('update_checkout');
+      });
+      })
 
    })( jQuery );
 

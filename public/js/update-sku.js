@@ -129,8 +129,10 @@ jQuery(document).ready(function($){
               const {product, total_vendor_products, author} = data;
               const {single_prodigi_cost, single_prodigi_id, single_prodigi_min_cost } = product;
               let adminField = $('.admin_min_price')
+
+              console.log(product);
             
-              adminField.val( single_prodigi_min_cost);
+              adminField.val( single_prodigi_cost);
               var i = 0;                
                 skuField = $('[data-name="sku"]')
               skuField.each(function (indexOfSKU, singleVariableSKU) { 
