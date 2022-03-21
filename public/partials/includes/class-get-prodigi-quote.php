@@ -1,12 +1,7 @@
 <?php
-// add_action( 'woocommerce_after_checkout_form', 'get_prodigi_quote', 10 );
-// add_filter( 'woocommerce_package_rates', 'get_prodigi_quote', 50, 1 );
 
-// function update_prodigi_shiping(){
-   
-    
-    
-// }
+ 
+
 add_filter('woocommerce_billing_fields', 'custom_woocommerce_billing_fields');
 
 function custom_woocommerce_billing_fields($fields)
@@ -14,7 +9,7 @@ function custom_woocommerce_billing_fields($fields)
 
     $fields['prodigi_shipping'] = array(
         'label' => __('Shipping Method', 'woocommerce'), // Add custom field label
-        'required' => false, // if field is required or not
+        'required' => true, // if field is required or not
         'clear' => false, // add clear or not
         'type' => 'select', // add field type
         'options' => array(
@@ -22,15 +17,25 @@ function custom_woocommerce_billing_fields($fields)
             'standard' => __('Standard', 'woocommerce'),
             'express' => __('Express', 'woocommerce'),
         ),
-        'class' => array('custom-shipping')    // add class name
+        'class' => array('custom-shipping'),    // add class name
+        'default' => 'budget', // set default value
+        
     );
 
     return $fields;
 }
 
 
+add_filter( 'woocommerce_checkout_fields', 'misha_email_first' );
+
+function misha_email_first( $checkout_fields ) {
+	$checkout_fields['billing']['prodigi_shipping']['priority'] = 4;
+	return $checkout_fields;
+}
+
 
 add_action('wp_ajax_get_prodigi_quote', 'get_prodigi_quote');
+add_action('wp_ajax_nopriv_prodigi_quote', 'get_prodigi_quote');
 
 
 
@@ -124,10 +129,6 @@ function get_prodigi_quote() {
 
     }
     
-
-    // var_dump( WC()->shipping->calculate_shipping( get_shipping_packages()));
-    //var_dump($response_body);
-    // echo $shippingCost;
   
     return $shippingCost;
 
@@ -135,7 +136,6 @@ function get_prodigi_quote() {
 
 function save_custom_data( $cart_item_data ) {
 
-    // var_dump($cart_item_data);
     return $cart_item_data;
 }
 add_filter( 'woocommerce_add_cart_item_data', 'save_custom_data', 10 );
@@ -154,6 +154,7 @@ function custom_fee_based_on_cart_total( $cart ) {
 
     if ( $fee != 0 ) 
         $cart->add_fee( __( "Shipping Cost", "woocommerce" ), $fee, false );
+        
 }
 
 
@@ -170,23 +171,30 @@ function disable_shipping_calc_on_cart( $show_shipping ) {
 add_filter( 'woocommerce_cart_ready_to_calc_shipping', 'disable_shipping_calc_on_cart', 99 );
 
 
-add_action( 'woocommerce_cart_totals_before_order_total', 'add_row' , 99);
-// add_action( 'woocommerce_proceed_to_checkout', 'add_row' , 99);
-function add_row() {
-    ?>
-        <div>
-            <p class="shipping-calculator-button" style="font-size:20px; display:block; margin:0; padding-bottom:5px;">Select a shipping Method</p>
-            <select name="prodigi_shipping" id="prodigi_shipping" style="width:100%; border-radius:2px; border: 1px solid #d4d4d4; padding:10px 20px;">
-            <option value="budget">Budget</option>
-            <option value="standard">Standard</option>
-            <option value="express">Express</option>
-        </select>
+add_action('woocommerce_checkout_create_order', 'update_custom_order_fields', 20, 2);
+function update_custom_order_fields( $order, $data ) {
+    // Update shipping method
+    // update shipping cost
+    // update Shipping country
 
-        </div>
-       
-</tr>
+    $shipping_method = WC()->session->get('shipping_price');
 
-    <?php
+    $order->update_meta_data( '_prodigi_shipping_method', $shipping_method );
 }
+
+add_action( 'woocommerce_thankyou', 'view_prodigi_shipping_details', 10 );
+add_action( 'woocommerce_view_order', 'view_prodigi_shipping_details', 10 );
+
+function view_prodigi_shipping_details( $order_id ){  ?>
+    <h2>Delivery Details</h2>
+    <table class="woocommerce-table shop_table gift_info">
+        <tbody>
+            <tr>
+                <th>Shipping Method</th>
+                <td ><strong> <?php echo ucfirst( get_post_meta( $order_id, '_prodigi_shipping_method', true )); ?></strong></td>
+            </tr>
+        </tbody>
+    </table>
+<?php }
 
 

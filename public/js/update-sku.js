@@ -93,7 +93,7 @@ jQuery(document).ready(function($){
                 let randomString = generateRandomSKU(4)
                 let newSku = author + '-' + single_prodigi_id + '-'+ randomString + '-' + total_vendor_products;
                 skuField = $('[data-name="sku"]')
-                console.log(skuField)
+                // console.log(skuField)
                 skuField.val(newSku); 
             },
             complete: function(){
@@ -114,7 +114,7 @@ jQuery(document).ready(function($){
             url: SkuAjax.ajaxurl,
             data: {
               action: "update_printable_sku",
-              data_id: $(this).val(),
+              data_id: $("#printable_sku").val(),
               
             },
             beforeSend: function() {
@@ -130,7 +130,7 @@ jQuery(document).ready(function($){
               const {single_prodigi_cost, single_prodigi_id, single_prodigi_min_cost } = product;
               let adminField = $('.admin_min_price')
 
-              console.log(product);
+              // console.log(product);
             
               adminField.val( single_prodigi_cost);
               var i = 0;                
