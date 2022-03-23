@@ -137,24 +137,37 @@ add_filter( 'wcfm_variation_edit_data', 'wcfm_product_data_variations_admin_pric
 
 function wcfm_product_variation_save_trifie( $wcfm_variation_data, $new_product_id, $variation_id, $variations, $wcfm_products_manage_form_data ) {
 	global $WCFM, $WCFMu;
-
+    // $printable_sku = $wcfm_products_manage_form_data['printable_sku'];
+    // update_post_meta($new_product_id, '_printable_sku', $printable_sku);
 	if( $variation_id  ) {
+
+        function save_sku_fields($new_product_id, $wcfm_products_manage_form_data){
+            $printable_sku = $wcfm_products_manage_form_data['printable_sku'];
+            update_post_meta($new_product_id, '_printable_sku', $printable_sku);
+
+
+        }
+
+        add_action( 'after_wcfm_products_manage_meta_save', 'save_sku_fields', 10, 2 );
+
 		update_post_meta( $variation_id, '_admin_min_price', $variations[ '_admin_min_price' ] );
+       
 	}
 	
 	return $wcfm_variation_data;
 }
+
 add_filter( 'wcfm_product_variation_data_factory', 'wcfm_product_variation_save_trifie', 100, 5 );
 
 
-function save_sku_fields($new_product_id, $wcfm_products_manage_form_data){
-    $printable_sku = $wcfm_products_manage_form_data['printable_sku'];
-    update_post_meta($new_product_id, '_printable_sku', $printable_sku);
+// function save_sku_fields($new_product_id, $wcfm_products_manage_form_data){
+//     $printable_sku = $wcfm_products_manage_form_data['printable_sku'];
+//     update_post_meta($new_product_id, '_printable_sku', $printable_sku);
 
 
-}
+// }
 
-add_action( 'after_wcfm_products_manage_meta_save', 'save_sku_fields', 10, 2 );
+// add_action( 'after_wcfm_products_manage_meta_save', 'save_sku_fields', 10, 2 );
 
 function make_variable_fields_required($variation_fields, $variations, $variation_shipping_option_array, $variation_tax_classes_options, $products_array){
   

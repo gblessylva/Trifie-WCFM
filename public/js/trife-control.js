@@ -3,6 +3,7 @@
 
      jQuery(document).ready(function($){
 
+
         var mediaUploader;
       
         $('#printable-image-selector').click(function(e) {

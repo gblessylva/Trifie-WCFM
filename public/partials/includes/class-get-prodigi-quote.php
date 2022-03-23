@@ -85,6 +85,97 @@ function get_prodigi_quote() {
                             //   End of Quote Body
  
                             //   Start of Quote Header
+        $copies = $woocommerce->cart->get_cart_item_quantities();
+        // var_dump($copies);
+    // For patchrounds
+    $patch_round_array = array (
+        'shippingMethod' => $shipping_price,
+        'destinationCountryCode' => $custome_shipping_country,
+        'currencyCode' => 'USD',
+        'items' => 
+        array (
+          0 => 
+          array (
+            'sku' => $prodigiSKU,
+            'copies' => 1,
+            'assets' => 
+            array (
+              0 => 
+              array (
+                'printArea' => 'default',
+              ),
+            ),
+          ),
+        ),
+      );
+      
+      $footware_array = array (
+        'shippingMethod' => $shipping_price,
+        'destinationCountryCode' => $custome_shipping_country,
+        'currencyCode' => 'USD',
+        'items' => 
+        array (
+          0 => 
+          array (
+            'sku' => $prodigiSKU,
+            'copies' => 1,
+            'assets' => 
+            array (
+              0 => 
+              array (
+                'printArea' => 'default',
+              ),
+            ),
+          ),
+        ),
+      );
+      $tech_array = array (
+        'shippingMethod' => $shipping_price,
+        'destinationCountryCode' => $custome_shipping_country,
+        'currencyCode' => 'USD',
+        'items' => 
+        array (
+          0 => 
+          array (
+            'sku' => $prodigiSKU,
+            'copies' => 1,
+            'assets' => 
+            array (
+              0 => 
+              array (
+                'printArea' => 'default',
+              ),
+            ),
+          ),
+        ),
+      );
+
+    $unknown_array = array (
+        'shippingMethod' => $shipping_price,
+        'destinationCountryCode' => $custome_shipping_country,
+        'currencyCode' => 'USD',
+        'items' => 
+        array (
+          0 => 
+          array (
+            'sku' => $prodigiSKU,
+            'copies' => 5,
+            'attributes' => 
+            array (
+              'wrap' => 'ImageWrap',
+              'color' => 'Black',
+            ),
+            'assets' => 
+            array (
+              0 => 
+              array (
+                'printArea' => 'default',
+              ),
+            ),
+          ),
+        ),
+      );
+    
     $quote_content = array(
             'method' => 'POST',
             'headers' => array(
@@ -94,32 +185,9 @@ function get_prodigi_quote() {
             
             ), 
             'body' => json_encode(
-                array (
-                    'shippingMethod' => $shipping_price,
-                    'destinationCountryCode' => $custome_shipping_country,
-                    'currencyCode' => 'USD',
-                    'items' => 
-                    array (
-                      0 => 
-                      array (
-                        'sku' => $prodigiSKU,
-                        'copies' => 5,
-                        'attributes' => 
-                        array (
-                          'wrap' => 'ImageWrap',
-                          'color' => 'Black',
-                        ),
-                        'assets' => 
-                        array (
-                          0 => 
-                          array (
-                            'printArea' => 'default',
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
+                    $footware_array,
             )
+            // end of body
         );
         // echo $api_key;
         $response = wp_remote_post( 'https://api.sandbox.prodigi.com/v4.0/quotes', $quote_content );
@@ -129,7 +197,7 @@ function get_prodigi_quote() {
 
     }
     
-  
+    // var_dump($response_body);
     return $shippingCost;
 
 }
@@ -152,7 +220,7 @@ function custom_fee_based_on_cart_total( $cart ) {
     // The conditional Calculation
     $fee = get_prodigi_quote();
 
-    if ( $fee != 0 ) 
+    // if ( $fee != 0 ) 
         $cart->add_fee( __( "Shipping Cost", "woocommerce" ), $fee, false );
         
 }

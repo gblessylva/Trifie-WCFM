@@ -132,7 +132,7 @@ jQuery(document).ready(function($){
 
               // console.log(product);
             
-              adminField.val( single_prodigi_cost);
+              adminField.val( single_prodigi_min_cost);
               var i = 0;                
                 skuField = $('[data-name="sku"]')
               skuField.each(function (indexOfSKU, singleVariableSKU) { 
