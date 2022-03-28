@@ -62,8 +62,11 @@ function get_prodigi_quote() {
         $live_url = wcfm_get_option('wcfm_prodigy_live_api_url', '');
         $live_api_key = wcfm_get_option('wcfm_prodigy_live_api_key', '');
         $test_api_key_vendor =wcfm_get_option('wcfm_prodigy_test_api_key', '');
+        $current_post = get_posts(array('post_type' => 'trifie_sku', 'meta_key' => 'prodigi_trifie_sku', 'meta_value' => $prodigiSKU));
+        $current_trifie_category = get_the_terms($current_post[0]->ID, 'trifie_sku_category');
+        $current_trifie_category_slug = $current_trifie_category[0]->slug;
 
-        
+                
         if($allow_live_mode == 'yes'){
             $url = $live_url;
             $api_key = $live_api_key;
@@ -74,21 +77,53 @@ function get_prodigi_quote() {
 
 
         $custome_shipping_country = WC()->customer->get_shipping_country();
-        // var_dump ($custome_shipping_country);\
-        // $get_prodigi_shipping_cost = update_prodigi_shiping();
-        // var_dump($get_prodigi_shipping_cost);
-        // var_dump($area);
-
         $shipping_price = WC()->session->get('shipping_price');
-        // return $shipping_price;
-
-                            //   End of Quote Body
- 
-                            //   Start of Quote Header
         $copies = $woocommerce->cart->get_cart_item_quantities();
-        // var_dump($copies);
-    // For patchrounds
-    $patch_round_array = array (
+    
+        // For patchrounds
+    $patch_round_array = json_encode( array (
+            'shippingMethod' => $shipping_price,
+            'destinationCountryCode' => $custome_shipping_country,
+            'currencyCode' => 'USD',
+            'items' => 
+            array (
+            0 => 
+            array (
+                'sku' => $prodigiSKU,
+                'copies' => 1,
+                'assets' => 
+                array (
+                0 => 
+                array (
+                    'printArea' => 'default',
+                ),
+                ),
+            ),
+            ),
+        ));
+    // For Generics
+    $unknown_array = json_encode( array  (
+      'shippingMethod' => $shipping_price,
+      'destinationCountryCode' => $custome_shipping_country,
+      'currencyCode' => 'USD',
+      'items' => 
+      array (
+        0 => 
+        array (
+          'sku' => $prodigiSKU,
+          'copies' =>1,
+          'assets' => 
+          array (
+            0 => 
+            array (
+              'printArea' => 'default',
+            ),
+          ),
+        ),
+      ),
+    ));
+    // For Footware
+    $footware_array = json_encode( array (
         'shippingMethod' => $shipping_price,
         'destinationCountryCode' => $custome_shipping_country,
         'currencyCode' => 'USD',
@@ -107,9 +142,9 @@ function get_prodigi_quote() {
             ),
           ),
         ),
-      );
-      
-      $footware_array = array (
+      ));
+    //   For Tech
+    $tech_array = json_encode( array (
         'shippingMethod' => $shipping_price,
         'destinationCountryCode' => $custome_shipping_country,
         'currencyCode' => 'USD',
@@ -128,8 +163,9 @@ function get_prodigi_quote() {
             ),
           ),
         ),
-      );
-      $tech_array = array (
+      ));
+    //    For Stationery
+    $stationery_array  = json_encode( array (
         'shippingMethod' => $shipping_price,
         'destinationCountryCode' => $custome_shipping_country,
         'currencyCode' => 'USD',
@@ -148,9 +184,10 @@ function get_prodigi_quote() {
             ),
           ),
         ),
-      );
+      ));
 
-    $unknown_array = array (
+   
+      $apparels_array = json_encode( array  (
         'shippingMethod' => $shipping_price,
         'destinationCountryCode' => $custome_shipping_country,
         'currencyCode' => 'USD',
@@ -159,11 +196,11 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => 5,
+            'copies' => 1,
             'attributes' => 
             array (
-              'wrap' => 'ImageWrap',
-              'color' => 'Black',
+              'color' => 'white',
+              'size' => 'M',
             ),
             'assets' => 
             array (
@@ -174,8 +211,234 @@ function get_prodigi_quote() {
             ),
           ),
         ),
-      );
+      ));
+
+      $framed_canvas_array = json_encode( array  (
+        'shippingMethod' => $shipping_price,
+        'destinationCountryCode' => $custome_shipping_country,
+        'currencyCode' => 'USD',
+        'items' => 
+        array (
+          0 => 
+          array (
+            'sku' => $prodigiSKU,
+            'copies' => 1,
+            'attributes' => 
+            array (
+              'color' => 'white',
+              'wrap' => 'ImageWrap',
+            ),
+            'assets' => 
+            array (
+              0 => 
+              array (
+                'printArea' => 'default',
+              ),
+            ),
+          ),
+        ),
+      ));
+
+      $rolled_canvas_array = json_encode( array  (
+        'shippingMethod' => $shipping_price,
+        'destinationCountryCode' => $custome_shipping_country,
+        'currencyCode' => 'USD',
+        'items' => 
+        array (
+          0 => 
+          array (
+            'sku' => $prodigiSKU,
+            'copies' => 1,
+            // 'attributes' => 
+            // array (
+            //   'wrap' => 'ImageWrap',
+            // ),
+            'assets' => 
+            array (
+              0 => 
+              array (
+                'printArea' => 'default',
+              ),
+            ),
+          ),
+        ),
+      ));
+
+      $stretched_canvas_array = json_encode( array  (
+        'shippingMethod' => $shipping_price,
+        'destinationCountryCode' => $custome_shipping_country,
+        'currencyCode' => 'USD',
+        'items' => 
+        array (
+          0 => 
+          array (
+            'sku' => $prodigiSKU,
+            'copies' => 1,
+            'attributes' => 
+            array (
+                'color' => 'black',
+                'wrap' => 'ImageWrap',
+            
+            ),
+            'assets' => 
+            array (
+              0 => 
+              array (
+                'printArea' => 'default',
+              ),
+            ),
+          ),
+        ),
+      ));
+
+      $framed_array = json_encode( array  (
+        'shippingMethod' => $shipping_price,
+        'destinationCountryCode' => $custome_shipping_country,
+        'currencyCode' => 'USD',
+        'items' => 
+        array (
+          0 => 
+          array (
+            'sku' => $prodigiSKU,
+            'copies' => 1,
+            'attributes' => 
+            array (
+                'color' => 'black',
+                // 'wrap' => 'ImageWrap',
+            
+            ),
+            'assets' => 
+            array (
+              0 => 
+              array (
+                'printArea' => 'default',
+              ),
+            ),
+          ),
+        ),
+      ));
+    //   To be checked
     
+
+      $home_ware_array = json_encode( array  (
+        'shippingMethod' => $shipping_price,
+        'destinationCountryCode' => $custome_shipping_country,
+        'currencyCode' => 'USD',
+        'items' => 
+        array (
+          0 => 
+          array (
+            'sku' => $prodigiSKU,
+            'copies' => 1,
+            // 'attributes' => 
+            // array (
+            //     'color' => 'black',
+            //     'wrap' => 'ImageWrap',
+            
+            // ),
+            'assets' => 
+            array (
+              0 => 
+              array (
+                'printArea' => 'default',
+              ),
+            ),
+          ),
+        ),
+      ));
+      $mounted_array = json_encode( array  (
+        'shippingMethod' => $shipping_price,
+        'destinationCountryCode' => $custome_shipping_country,
+        'currencyCode' => 'USD',
+        'items' => 
+        array (
+          0 => 
+          array (
+            'sku' => $prodigiSKU,
+            'copies' => 1,
+            'assets' => 
+            array (
+              0 => 
+              array (
+                'printArea' => 'default',
+              ),
+            ),
+          ),
+        ),
+      ));
+
+      $photo_gift_array = json_encode( array  (
+        'shippingMethod' => $shipping_price,
+        'destinationCountryCode' => $custome_shipping_country,
+        'currencyCode' => 'USD',
+        'items' => 
+        array (
+          0 => 
+          array (
+            'sku' => $prodigiSKU,
+            'copies' => 1,
+            // 'attributes' => 
+            // array (
+            //     'color' => 'black',
+            //     'wrap' => 'ImageWrap',
+            
+            // ),
+            'assets' => 
+            array (
+              0 => 
+              array (
+                'printArea' => 'default',
+              ),
+            ),
+          ),
+        ),
+      ));
+
+      $prints_gift_array = json_encode( array  (
+        'shippingMethod' => $shipping_price,
+        'destinationCountryCode' => $custome_shipping_country,
+        'currencyCode' => 'USD',
+        'items' => 
+        array (
+          0 => 
+          array (
+            'sku' => $prodigiSKU,
+            'copies' => 1,
+            'assets' => 
+            array (
+              0 => 
+              array (
+                'printArea' => 'default',
+              ),
+            ),
+          ),
+        ),
+      ));
+
+      $body_array;
+      if($current_trifie_category_slug == 'patch-round'){
+        $body_array = $patch_round_array;
+        }elseif($current_trifie_category_slug == 'gallery'){
+        $body_array = $galerry_array;
+        }elseif($current_trifie_category_slug == 'home-ware'){
+        $body_array = $home_ware_array;
+        }elseif($current_trifie_category_slug == 'mounted'){
+        $body_array = $mounted_array;
+        }elseif($current_trifie_category_slug == 'photo-gift'){
+        $body_array = $photo_gift_array;
+        }elseif($current_trifie_category_slug == 'prints-gift'){
+        $body_array = $prints_gift_array;
+        }elseif($current_trifie_category_slug == 'framed'){
+        $body_array = $framed_array;
+        }elseif($current_trifie_category_slug == 'stretched-canvas'){
+        $body_array = $stretched_canvas_array;
+        }else{
+        $body_array = $unknown_array;
+        }
+   
+
+
+
     $quote_content = array(
             'method' => 'POST',
             'headers' => array(
@@ -184,9 +447,7 @@ function get_prodigi_quote() {
                 'Accept' => 'application/json; charset=utf-8',
             
             ), 
-            'body' => json_encode(
-                    $footware_array,
-            )
+            'body' => $body_array,
             // end of body
         );
         // echo $api_key;
@@ -197,7 +458,7 @@ function get_prodigi_quote() {
 
     }
     
-    // var_dump($response_body);
+    var_dump($response);
     return $shippingCost;
 
 }
