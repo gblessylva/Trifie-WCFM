@@ -26,9 +26,9 @@ function custom_woocommerce_billing_fields($fields)
 }
 
 
-add_filter( 'woocommerce_checkout_fields', 'misha_email_first' );
+add_filter( 'woocommerce_checkout_fields', 'prodigi_email_reorder' );
 
-function misha_email_first( $checkout_fields ) {
+function prodigi_email_reorder( $checkout_fields ) {
 	$checkout_fields['billing']['prodigi_shipping']['priority'] = 4;
 	return $checkout_fields;
 }
@@ -44,6 +44,7 @@ function get_prodigi_quote() {
   global $woocommerce;
 
     $items = $woocommerce->cart->get_cart();
+    
     if ( isset($_POST['shipping_price']) ) {
         WC()->session->set('shipping_price', ($_POST['shipping_price'] ) );
         echo  WC()->session->get('shipping_price');
@@ -458,7 +459,7 @@ function get_prodigi_quote() {
 
     }
     
-    var_dump($response);
+    // var_dump($response);
     return $shippingCost;
 
 }

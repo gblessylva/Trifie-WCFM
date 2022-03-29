@@ -21,7 +21,7 @@ function send_order_to_prodigi($order_id){
     $country = $order->shipping_country;
     $fullname = $order->billing_first_name ." ". $order->billing_last_name;
     $copies = $order->get_item_count();
-    $shipping_method = $order->get_shipping_method();
+    $shipping_method = WC()->session->get('shipping_price');
 
     foreach ($order->get_items() as $item) {
         $product = wc_get_product($item->get_product_id());
@@ -62,6 +62,8 @@ function send_order_to_prodigi($order_id){
     // $test_api_key = 'test_1ecc20d0-b515-456e-8583-79e0b320ebf2';
 
     // echo $test_url;
+    $url = '';
+    $api_key = '';
     if($allow_live_mode == 'yes'){
         $url = $live_url;
         $api_key = $live_api_key;
@@ -76,7 +78,7 @@ function send_order_to_prodigi($order_id){
     $framed_canvas = json_encode(
         array (
             'merchantReference' => $order_id,
-            'shippingMethod' => 'Overnight',
+            'shippingMethod' => $shipping_method,
             'recipient' => 
             array (
               'address' => 
@@ -128,12 +130,65 @@ function send_order_to_prodigi($order_id){
           )
     );
 
-
+    $patch_round_array =  json_encode(
+      array (
+          'merchantReference' => $order_id,
+          'shippingMethod' => $shipping_method,
+          'recipient' => 
+          array (
+            'address' => 
+            array (
+              'line1' => $shipping,
+              'line2' => $shipping,
+              'postalOrZipCode' => $postcode ?$postcode: '09029',
+              'countryCode' => $country,
+              'townOrCity' =>$city,
+              'stateOrCounty' => $state,
+            ),
+            'name' => $fullname,
+          ),
+          'items' => 
+          array (
+            0 => 
+            array (
+              'merchantReference' => $item_sku. '-'. $product_name,
+              'sku' => $prodigiSKU,
+              'copies' => $copies,
+              'sizing' => 'fillPrintArea',
+              'attributes' => 
+              array (
+                'size' => 's',
+                'color'=>'Black',
+              ),
+              'assets' => 
+              array (
+                0 => 
+                array (
+                  'printArea' => 'Default',
+                  'url' => $printable_image_url,
+                  'md5Hash' => 'dcb2b27755a6f2ceb09089856508f31b',
+                ),
+              ),
+            ),
+          ),
+          'metadata' => 
+          array (
+            'mycustomkey' => 'some-guid',
+            'someCustomerPreference' => 
+            array (
+              'preference1' => 'something',
+              'preference2' => 'red',
+            ),
+            'sourceId' => 12345,
+          ),
+        )
+  );
+  
     // POst Card
     $post_card = json_encode(
       array (
           'merchantReference' => $order_id,
-          'shippingMethod' => 'Overnight',
+          'shippingMethod' => $shipping_method,
           'recipient' => 
           array (
             'address' => 
@@ -182,7 +237,7 @@ function send_order_to_prodigi($order_id){
   $apparel = json_encode(
     array (
         'merchantReference' => $order_id,
-        'shippingMethod' => 'Overnight',
+        'shippingMethod' => $shipping_method,
         'recipient' => 
         array (
           'address' => 
@@ -233,12 +288,61 @@ function send_order_to_prodigi($order_id){
       )
 );
 
+$generic= json_encode(
+  array (
+      'merchantReference' => $order_id,
+      'shippingMethod' => $shipping_method,
+      'recipient' => 
+      array (
+        'address' => 
+        array (
+          'line1' => $shipping,
+          'line2' => $shipping,
+          'postalOrZipCode' => $postcode ?$postcode: '09029',
+          'countryCode' => $country,
+          'townOrCity' =>$city,
+          'stateOrCounty' => $state,
+        ),
+        'name' => $fullname,
+      ),
+      'items' => 
+      array (
+        0 => 
+        array (
+          'merchantReference' => $item_sku. '-'. $product_name,
+          'sku' => $prodigiSKU,
+          'copies' => $copies,
+          'sizing' => 'fillPrintArea',
+          'assets' => 
+          array (
+            0 => 
+            array (
+              'printArea' => 'Default',
+              'url' => $printable_image_url,
+              'md5Hash' => 'dcb2b27755a6f2ceb09089856508f31b',
+            ),
+          ),
+        ),
+      ),
+      'metadata' => 
+      array (
+        'mycustomkey' => 'some-guid',
+        'someCustomerPreference' => 
+        array (
+          'preference1' => 'something',
+          'preference2' => 'red',
+        ),
+        'sourceId' => 12345,
+      ),
+    )
+);
+
 
 
     $framed_args = array(
         'method' => 'POST',
         'headers' => array(
-            'X-API-Key' => $test_api_key_vendor,
+            'X-API-Key' => $api_key,
             'Content-type' => 'application/json',
             'Accept' => 'application/json; charset=utf-8',
         
@@ -248,32 +352,57 @@ function send_order_to_prodigi($order_id){
     $postcard_args = array(
       'method' => 'POST',
       'headers' => array(
-          'X-API-Key' => $test_api_key_vendor,
+          'X-API-Key' => $api_key,
           'Content-type' => 'application/json',
           'Accept' => 'application/json; charset=utf-8',
       
       ), 
       'body' => $post_card
   );
+  $patch_round_args = array(
+    'method' => 'POST',
+    'headers' => array(
+        'X-API-Key' => $api_key,
+        'Content-type' => 'application/json',
+        'Accept' => 'application/json; charset=utf-8',
+    
+    ), 
+    'body' => $patch_round_array
+  );
 
   $apparel_args= array(
     'method' => 'POST',
     'headers' => array(
-        'X-API-Key' => $test_api_key_vendor,
+        'X-API-Key' => $api_key,
         'Content-type' => 'application/json',
         'Accept' => 'application/json; charset=utf-8',
     
     ), 
     'body' => $apparel
 );
+
+$generig_args= array(
+  'method' => 'POST',
+  'headers' => array(
+      'X-API-Key' => $api_key,
+      'Content-type' => 'application/json',
+      'Accept' => 'application/json; charset=utf-8',
+  ),
+  'body' => $generic
+);
     
     if($trifie_cat_slug == 'postcard'){
-      $response = wp_remote_request( $test_url.'Orders/', $postcard_args );
-    }else if ($trifie_cat_slug == 'framed-canvas') {
-      $response = wp_remote_request( $test_url.'Orders/', $framed_args );
+      $response = wp_remote_request( $url.'Orders/', $postcard_args );
+    }elseif ($trifie_cat_slug == 'framed-canvas') {
+      $response = wp_remote_request( $url.'Orders/', $framed_args );
+    }elseif($trifie_cat_slug=='apparel'){
+      $response = wp_remote_request( $url.'Orders/', $apparel_args );
+    }elseif($trifie_cat_slug=='patch-round'){
+      $response = wp_remote_request( $url.'Orders/', $patch_round_args );
     }else{
-     $response = wp_remote_request( $test_url.'Orders/', $apparel_args );
+      $response = wp_remote_request( $url.'Orders/', $generig_args );
     }
+
       
     $response_body = wp_remote_retrieve_body( $response ); 
     // var_dump($response['response']['code']);
