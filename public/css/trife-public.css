@@ -119,3 +119,9 @@ div#wcfm-visibility\ wcfm-visibility.misc-pub-section.misc-pub-visibility {
     border: 1px solid #d1d1d1d1 !important;
     border-radius: 5px;
 }
+
+.delete-printable-image{
+    background-color: black;
+    border-radius: 4px;
+    color: white;
+}

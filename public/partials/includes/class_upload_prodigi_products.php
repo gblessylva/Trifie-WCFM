@@ -1,8 +1,6 @@
 <?php
 global $wpdb;
 
-// Table name
-$tablename = $wpdb->prefix."customplugin";
 
 // Import CSV
 if(isset($_POST['butimport'])){
@@ -34,15 +32,6 @@ if(isset($_POST['butimport'])){
         $slug = strtolower(str_replace(' ', '-', $prodigi_trifie_sku));
 
 
-        // echo 'Title: '.$title.'<br>';
-        // echo 'Trifie SKU Recomended Size: '.$trifie_sku_recomended_size.'<br>';
-        // echo 'Category: '.$Category.'<br>';
-        // echo 'Prodigi Trifie SKU: '.$prodigi_trifie_sku.'<br>';
-        // echo 'Trifie Product ID: '.$trifie_product_id.'<br>';
-        // echo 'Trifie Product Cost: '.$trifie_product_cost.'<br>';
-        // echo 'Trifie Product Min Price: '.$trifie_product_min_price.'<br>';
-        // echo 'Slug: '.$slug.'<br>';
-
     $added_cat = wp_insert_term(
         $Category,
         'trifie_sku_category',
@@ -51,7 +40,7 @@ if(isset($_POST['butimport'])){
         )
     );
     if(!is_wp_error($added_cat)){
-        var_dump($added_cat);
+        // var_dump($added_cat);
       $cat_id = $added_cat['term_id'];
       $cat_slug = $added_cat['slug'];
       $new_category = get_category_by_slug( $cat_slug );
@@ -106,56 +95,15 @@ if(isset($_POST['butimport'])){
     }
   }
 
-    // Read file
-    // while(($csvData = fgetcsv($csvFile)) !== FALSE){
-    //   $csvData = array_map("utf8_encode", $csvData);
-
-    //   var_dump($csvData);
-      // Row column length
-    //   $dataLen = count($csvData);
-
-      // Skip row if length != 4
-    //   if( !($dataLen == 4) ) continue;
-
-      // Assign value to variables
-    //   $name = trim($csvData[0]);
-    //   $username = trim($csvData[1]);
-    //   $email = trim($csvData[2]);
-    //   $age = trim($csvData[3]);
-
-      // Check record already exists or not
-    //   $cntSQL = "SELECT count(*) as count FROM {$tablename} where username='".$username."'";
-    //   $record = $wpdb->get_results($cntSQL, OBJECT);
-
-    //   if($record[0]->count==0){
-
-    //     // Check if variable is empty or not
-    //     if(!empty($name) && !empty($username) && !empty($email) && !empty($age) ) {
-
-    //       // Insert Record
-    //       $wpdb->insert($tablename, array(
-    //         'name' =>$name,
-    //         'username' =>$username,
-    //         'email' =>$email,
-    //         'age' => $age
-    //       ));
-
-    //       if($wpdb->insert_id > 0){
-    //         $totalInserted++;
-    //       }
-    //     }
-
-    //   }
-
-//     }
-//     echo "<h3 style='color: green;'>Total record Inserted : ".$totalInserted."</h3>";
-
-
-//   }else{
-//     echo "<h3 style='color: red;'>Invalid Extension</h3>";
-//   }
 
 }
+
+
+// Custom upload
+
+
+
+    
 
 ?>
 <h2>All Entries</h2>

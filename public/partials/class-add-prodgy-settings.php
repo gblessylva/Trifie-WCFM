@@ -4,6 +4,18 @@ apply_filters( 'wcfm_is_allow_sub_category_attributes_mapping', true );
 
 add_action( 'end_wcfm_settings', 'wcfmt_prodigy_settings', 1 );
 add_action( 'wcfm_settings_update', 'wcfmt_prodigy_settings_update', 20 );
+// add_action( 'wp_enqueue_scripts', 'load_select2_scripts' );
+
+
+//  function load_select2_scripts() {
+//     wp_register_style( 'select2css', '//cdnjs.cloudflare.com/ajax/libs/select2/3.4.8/select2.css', false, '1.0', 'all' );
+//     wp_register_script( 'select2', '//cdnjs.cloudflare.com/ajax/libs/select2/3.4.8/select2.js', array( 'jquery' ), '1.0', true );
+//     wp_enqueue_style( 'select2css' );
+//     wp_enqueue_script( 'select2' );
+// }
+
+
+
 
 function wcfmt_prodigy_settings($wcfm_options){
    global $WCFM;

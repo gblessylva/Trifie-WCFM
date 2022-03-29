@@ -1,195 +1,32 @@
 <?php
-function trifie_query_vars( $query_vars ) {
-	$wcfm_modified_endpoints = (array) get_option( 'wcfm_endpoints' );
-	
-	$query_custom_menus_vars = array(
-		'product-templates'               => ! empty( $wcfm_modified_endpoints['product-templates'] ) ? $wcfm_modified_endpoints['product-templates'] : 'product-templates',
-		
-		'manage-prodigi-products'             => ! empty( $wcfm_modified_endpoints['manage-prodigi-products'] ) ? $wcfm_modified_endpoints['manage-prodigi-products'] : 'manage-prodigi-products',
-	     'product-template-upload'             => ! empty( $wcfm_modified_endpoints['product-template-upload'] ) ? $wcfm_modified_endpoints['product-template-upload'] : 'product-template-upload'
-	);
-	
-	$query_vars = array_merge( $query_vars, $query_custom_menus_vars );
-	
-	return $query_vars;
-}
-add_filter( 'wcfm_query_vars', 'trifie_query_vars', 50 );
+add_action('wp_ajax_datatables_endpoint', 'load_product_templates'); //logged in
+add_action('wp_ajax_no_priv_datatables_endpoint', 'load_product_templates'); //not logged in
 
-/**
- * WCFM - Custom Menus End Point Title
- */
-function wcfmcsm_endpoint_title( $title, $endpoint ) {
-	global $wp;
-	switch ( $endpoint ) {
-		case 'product-templates' :
-			$title = __( 'Product Templates', 'wcfm-custom-menus' );
-		break;
-		case 'manage-prodigi-products' :
-			$title = __( 'manage-prodigi-products', 'wcfm-custom-menus' );
-		break;
-		// case 'product-template-upload' :
-		// 	$title = __("Add New Brand", 'wcfm-custom-menu');
-		// break;	
-
-	}
-	
-	return $title;
-}
-add_filter( 'wcfm_endpoint_title', 'wcfmcsm_endpoint_title', 50, 2 );
-
-/**
- * WCFM - Custom Menus Endpoint Intialize
- */
-function wcfmcsm_init() {
-	global $WCFM_Query;
-
-	// Intialize WCFM End points
-	$WCFM_Query->init_query_vars();
-	$WCFM_Query->add_endpoints();
-	
-	if( !get_option( 'wcfm_updated_end_point_cms' ) ) {
-		// Flush rules after endpoint update
-		flush_rewrite_rules();
-		update_option( 'wcfm_updated_end_point_cms', 1 );
-	}
-}
-add_action( 'init', 'wcfmcsm_init', 50 );
-
-/**
- * WCFM - Custom Menus Endpoiint Edit
- */
-function wcfm_custom_menus_endpoints_slug( $endpoints ) {
-	
-	$custom_menus_endpoints = array(
-												'product-templates'        => 'prodigi-products',
-												
-												'manage-prodigi-products'      => 'manage-prodigi-products',
-												// 'product-template-upload' => 'product-template-upload',
-												);
-	
-	$endpoints = array_merge( $endpoints, $custom_menus_endpoints );
-	
-	return $endpoints;
-}
-add_filter( 'wcfm_endpoints_slug', 'wcfm_custom_menus_endpoints_slug' );
-
-if(!function_exists('get_wcfm_custom_menus_url')) {
-	function get_wcfm_custom_menus_url( $endpoint ) {
-		global $WCFM;
-		$wcfm_page = get_wcfm_page();
-		$wcfm_custom_menus_url = wcfm_get_endpoint_url( $endpoint, '', $wcfm_page );
-		return $wcfm_custom_menus_url;
-	}
-}
-
-/**
- * WCFM - Custom Menus
- */
-function wcfmcsm_wcfm_menus( $menus ) {
-	global $WCFM;
-	
-	$custom_menus = array( 'product-templates' => array(   'label'  => __( 'Product Templates', 'wcfm-custom-menus'),
-																									 'url'       => get_wcfm_custom_menus_url( 'product-templates' ),
-																									 'icon'      => 'cube',
-																									 'priority'  => 5.1
-																									)
-											);
-	
-	$menus = array_merge( $menus, $custom_menus );
-		
-	return $menus;
-}
-add_filter( 'wcfm_menus', 'wcfmcsm_wcfm_menus', 20 );
-
-/**
- *  WCFM - Custom Menus Views
- */
-function wcfm_csm_load_views( $end_point ) {
-	global $WCFM, $WCFMu;
-	$plugin_path = trailingslashit( dirname( __FILE__  ) );
-	
-	switch( $end_point ) {
-		case 'product-templates':
-            //  require_once( 'includes/class-view-all-products.php');
-            require_once('includes/class-test-view.php');
-         
-		break;
-
-		case 'manage-prodigi-products':
-			// require_once( $plugin_path . 'views/class-view-all-products.php' );
-		break;
-		case 'product-template-upload' :
-			require_once($plugin_path . 'includes/class-product-template-upload.php');
-			break;
-	}
-}
-add_action( 'wcfm_load_views', 'wcfm_csm_load_views', 50 );
-add_action( 'before_wcfm_load_views', 'wcfm_csm_load_views', 50 );
-
-// Custom Load WCFM Scripts
-function wcfm_csm_load_scripts( $end_point ) {
+function load_product_template_script( $end_point ) {
 	global $WCFM;
 	$plugin_url = trailingslashit( plugins_url( '', __FILE__ ) );
 	
 	switch( $end_point ) {
 		case 'product-templates':
-			wp_enqueue_script( 'wcfm_brands_js',  $plugin_url .'../js/load-table.js', array( 'jquery' ), $WCFM->version, true );
-            wp_enqueue_script('jquery-datatables-js','//cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js',array('jquery'));
-            wp_enqueue_script('jquery-datatables-responsive-js','//cdn.datatables.net/responsive/2.2.6/js/dataTables.responsive.min.js',array('jquery'));
-            // wp_enqueue_script('table', 'https://table-sortable.now.sh/table-sortable.js', array( 'jquery' ), $WCFM->version, true);
-
-            wp_enqueue_script( 'clone-template', $plugin_url .'../js/clone-template.js', array( 'jquery' ), $WCFM->version, true );
-            wp_localize_script( 'clone-template', 'CloneAjax', array(
+            wp_enqueue_script( 'load_product_template_script', $plugin_url .'../../js/load-table.js', array( 'jquery' ), $WCFM->version, true );
+            wp_localize_script( 'load_product_template_script', 'LoadTemplateAjax', array(
                 'ajaxurl' => admin_url( 'admin-ajax.php' ),
               ));
-
-// Load delete script
-
-wp_enqueue_script( 'delete-product-template', $plugin_url .'../js/delete-product-template.js', array( 'jquery' ), $WCFM->version, true );
-wp_localize_script( 'delete-product-template', 'DeleteAjax', array(
-    'ajaxurl' => admin_url( 'admin-ajax.php' ),
-  ));
-            
-		break;
-        case 'product-template-upload' :
-            wp_enqueue_script( 'template-upload-checker',  $plugin_url .'../js/template-upload-checker.js', array( 'jquery' ), $WCFM->version, true );
-        break;
-	}
-}
-
-add_action( 'wcfm_load_scripts', 'wcfm_csm_load_scripts' );
-add_action( 'after_wcfm_load_scripts', 'wcfm_csm_load_scripts' );
-
-// Custom Load WCFM Styles
-function wcfm_csm_load_styles( $end_point ) {
-	global $WCFM, $WCFMu;
-	$plugin_url = trailingslashit( plugins_url( '', __FILE__ ) );
-	
-	switch( $end_point ) {
-		case 'product-templates':
-			// wp_enqueue_style( 'wcfmu_brands_css', $plugin_url . '../css/product.css', array(), $WCFM->version );
-            wp_enqueue_style('jquery-datatables-css','//cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css');
-            wp_enqueue_style('jquery-datatables-responsive-css','//cdn.datatables.net/responsive/2.2.6/css/responsive.dataTables.min.css');
-
-            
 		break;
 	}
 }
-add_action( 'wcfm_load_styles', 'wcfm_csm_load_styles' );
-add_action( 'after_wcfm_load_styles', 'wcfm_csm_load_styles' );
 
+add_action( 'wcfm_load_scripts', 'load_product_template_script' );
+add_action( 'after_wcfm_load_scripts', 'load_product_template_script' );
 
-
-add_action('wp_ajax_datatables_endpoint', 'prodigi_load_templates'); //logged in
-add_action('wp_ajax_no_priv_datatables_endpoint', 'prodigi_load_templates'); //not logged in
-
-
-function prodigi_load_templates(){
+ function load_product_templates() {
     global $WCFM, $wpdb, $_POST;
 		
     $wcfmu_products_status = apply_filters( 'wcfmu_products_menus', array(  
-                                                                                                                                        'template' => __( 'Published', 'wc-frontend-manager'),
-                                                                                                                
+                                                                                                                                        'publish' => __( 'Published', 'wc-frontend-manager'),
+                                                                                                                                        'draft' => __( 'Draft', 'wc-frontend-manager'),
+                                                                                                                                        'pending' => __( 'Pending', 'wc-frontend-manager'),
+                                                                                                                                        'archived' => __( 'Archived', 'wc-frontend-manager')
                                                                                                                                     ) );
     
     $length = sanitize_text_field( $_POST['length'] );
@@ -271,6 +108,34 @@ function prodigi_load_templates(){
         }
     }
     
+    // Vendor Filter
+    if( isset($_POST['product_vendor']) && !empty($_POST['product_vendor']) ) {
+        $is_marketplace = wcfm_is_marketplace();
+        if( $is_marketplace ) {
+            if( !wcfm_is_vendor() ) {
+                if( $is_marketplace == 'wcpvendors' ) {
+                    $args['tax_query'][] = array(
+                                                                                'taxonomy' => WC_PRODUCT_VENDORS_TAXONOMY,
+                                                                                'field' => 'term_id',
+                                                                                'terms' => wc_clean($_POST['product_vendor']),
+                                                                            );
+                } elseif( $is_marketplace == 'wcvendors' ) {
+                    $args['author'] = $_POST['product_vendor'];
+                } elseif( $is_marketplace == 'wcmarketplace' ) {
+                    $vendor_term = absint( get_user_meta( wc_clean($_POST['product_vendor']), '_vendor_term_id', true ) );
+                    $args['tax_query'][] = array(
+                                                                                'taxonomy' => 'dc_vendor_shop',
+                                                                                'field' => 'term_id',
+                                                                                'terms' => $vendor_term,
+                                                                            );
+                } elseif( $is_marketplace == 'dokan' ) {
+                    $args['author'] = wc_clean($_POST['product_vendor']);
+                } elseif( $is_marketplace == 'wcfmmarketplace' ) {
+                    $args['author'] = wc_clean($_POST['product_vendor']);
+                }
+            }
+        }
+    }
     
     // Order by SKU
     if( isset( $_POST['order'] ) && isset( $_POST['order'][0] ) && isset( $_POST['order'][0]['column'] ) && ( $_POST['order'][0]['column'] == 3 ) ) {
@@ -299,18 +164,24 @@ function prodigi_load_templates(){
         $args['order']    = wc_clean($_POST['order'][0]['dir']);
     }
     
-    // $args = apply_filters( 'wcfm_products_args', $args );
+    $args = apply_filters( 'wcfm_products_args', $args );
     
     $wcfm_products_array = get_posts( $args );
     
-    // var_dump($wcfm_products_array);
     $pro_count = 0;
     $filtered_pro_count = 0;
     // Get Product Count
-    // $current_user_id  = apply_filters( 'wcfm_current_vendor_id', get_current_user_id() );
-    // if( !wcfm_is_vendor() ) $current_user_id = 0;
+    $current_user_id  = apply_filters( 'wcfm_current_vendor_id', get_current_user_id() );
+    if( !wcfm_is_vendor() ) $current_user_id = 0;
     $count_products = array();
-    $pro_count = count($wcfm_products_array);
+    if( isset($_POST['product_status']) && !empty($_POST['product_status']) && ( $_POST['product_status'] != 'any' ) ) {
+        $pro_count = wcfm_get_user_posts_count( $current_user_id, 'product', wc_clean($_POST['product_status']) );
+    } else {
+        $pro_count = wcfm_get_user_posts_count( $current_user_id, 'product', 'publish' );
+        $pro_count += wcfm_get_user_posts_count( $current_user_id, 'product', 'pending' );
+        $pro_count += wcfm_get_user_posts_count( $current_user_id, 'product', 'draft' );
+        $pro_count += wcfm_get_user_posts_count( $current_user_id, 'product', 'private' );
+    }
     
     // Get Filtered Post Count
     $filtered_pro_count = $pro_count; 
@@ -526,36 +397,85 @@ function prodigi_load_templates(){
             $wcfm_products_json_arr[$index][] =  '<span class="view_count">' . (int) get_post_meta( $wcfm_products_single->ID, '_wcfm_product_views', true ) . '</span>';
             
             // Date
-            $wcfm_products_json_arr[$index][] =  get_post_meta($wcfm_products_single->ID, '_printable_sku', true);
-            
-            // apply_filters( 'wcfm_products_date_display', date_i18n( wc_date_format(), strtotime($wcfm_products_single->post_date) ), $wcfm_products_single->ID, $the_product );
+            $wcfm_products_json_arr[$index][] =  apply_filters( 'wcfm_products_date_display', date_i18n( wc_date_format(), strtotime($wcfm_products_single->post_date) ), $wcfm_products_single->ID, $the_product );
             
             // Vendor
-            // $vendor_name = '&ndash;';
-            // if( !$WCFM->is_marketplace || wcfm_is_vendor() ) {
-            //     $wcfm_products_json_arr[$index][] =  $vendor_name;
-            // } else {
-            //     $store_name = wcfm_get_vendor_store_by_post( $wcfm_products_single->ID );
-            //     if( $store_name ) {
-            //         $vendor_name = $store_name;
-            //     }
-            //     $wcfm_products_json_arr[$index][] =  $vendor_name;
-            // }
-            $wcfm_products_json_arr[$index][] =  get_post_meta($wcfm_products_single->ID, 'trifie_product_min_price', true);
-
+            $vendor_name = '&ndash;';
+            if( !$WCFM->is_marketplace || wcfm_is_vendor() ) {
+                $wcfm_products_json_arr[$index][] =  $vendor_name;
+            } else {
+                $store_name = wcfm_get_vendor_store_by_post( $wcfm_products_single->ID );
+                if( $store_name ) {
+                    $vendor_name = $store_name;
+                }
+                $wcfm_products_json_arr[$index][] =  $vendor_name;
+            }
+            
             // Additional Info
             $wcfm_products_json_arr[$index][] = apply_filters( 'wcfm_products_additonal_data', '&ndash;', $wcfm_products_single->ID );
             
             // Action
             $actions = '';
-            $delete_nonce = wp_create_nonce('delete_template_nonce');
+            
+            if( $wcfm_products_single->post_status != 'publish' ) {
+                if( !wcfm_is_vendor() && apply_filters( 'wcfm_is_allow_publish_products', true ) ) {
+                    $actions .= '<a class="wcfm_product_approve wcfm-action-icon" href="#" data-proid="' . $wcfm_products_single->ID . '"><span class="wcfmfa fa-check-circle text_tip" data-tip="' . esc_attr__( 'Mark Approve / Publish', 'wc-frontend-manager' ) . '"></span></a>';
+                    
+                    $wcfm_review_product_notified = get_post_meta( $wcfm_products_single->ID, '_wcfm_review_product_notified', true );
+                    if( $wcfm_review_product_notified ) {
+                        $actions .= '<a class="wcfm_product_reject wcfm-action-icon" href="#" data-proid="' . $wcfm_products_single->ID . '"><span class="wcfmfa fa-times-circle text_tip" data-tip="' . esc_attr__( 'Mark Rejected', 'wc-frontend-manager' ) . '"></span></a>';	
+                    }
+                }
+            }
             
             if( apply_filters( 'wcfm_is_allow_view_product', true ) ) {
                 $actions .= '<a class="wcfm-action-icon" target="_blank" href="' . apply_filters( 'wcfm_product_preview_url', get_permalink( $wcfm_products_single->ID ) ) . '"><span class="wcfmfa fa-eye text_tip" data-tip="' . esc_attr__( 'View', 'wc-frontend-manager' ) . '"></span></a>';
             }
-
-            $actions .= '<a class="clone-template wcfm-action-icon" href="#" data-id="' . $wcfm_products_single->ID . '"><span class="wcfmfa fa-copy text_tip" data-tip="' . esc_attr__( 'Clone Template', 'wc-frontend-manager' ) . '"></span></a>';
-            $actions .= ( apply_filters( 'wcfm_is_allow_delete_products', true ) && apply_filters( 'wcfm_is_allow_delete_specific_products', true, $wcfm_products_single->ID ) ) ? '<a class="wcfm-action-icon wcfm_product_delete" href="#" data-nonce="'.$delete_nonce .'" data-proid="' . $wcfm_products_single->ID . '"><span class="wcfmfa fa-trash-alt text_tip" data-tip="' . esc_attr__( 'Delete', 'wc-frontend-manager' ) . '"></span></a>' : '';
+            
+            // Mark Featured - 3.0.1
+            if( $wcfm_products_single->post_status == 'publish' ) {
+                if( apply_filters( 'wcfm_is_allow_featured_product', true ) ) {
+                    if( WCFM_Dependencies::wcfmu_plugin_active_check() ) {
+                        if( has_term( 'featured', 'product_visibility', $wcfm_products_single->ID ) ) {
+                            $actions .= '<br/><a class="wcfm_product_featured wcfm-action-icon" href="#" data-featured="nofeatured" data-proid="' . $wcfm_products_single->ID . '"><span class="wcfmfa fa-star-of-life text_tip" data-tip="' . esc_attr__( 'No Featured', 'wc-frontend-manager' ) . '"></span></a>';
+                        } else {
+                            if( apply_filters( 'wcfm_has_featured_product_limit', true ) ) {
+                                $actions .= '<br/><a class="wcfm_product_featured wcfm-action-icon" href="#" data-featured="featured" data-proid="' . $wcfm_products_single->ID . '"><span class="wcfmfa fa-star text_tip" data-tip="' . esc_attr__( 'Mark Featured', 'wc-frontend-manager' ) . '"></span></a>';
+                            }
+                        }
+                    } else {
+                        if( $is_wcfmu_inactive_notice_show = apply_filters( 'is_wcfmu_inactive_notice_show', true ) ) {
+                            $actions .= '<br/><a class="wcfm_product_dummy_featured wcfm-action-icon" href="#" onclick="return false;"><span class="wcfmfa fa-star-half-alt text_tip" data-tip="' . __( 'Featured Product: Upgrade your WCFM to WCFM Ultimate to avail this feature.', 'wc-frontend-manager' ) . '"></span></a>';
+                        }
+                    }
+                }
+            }
+            
+            // Duplicate - 2.5.2
+            if( apply_filters( 'wcfm_is_allow_duplicate_product', true ) && apply_filters( 'wcfm_is_allow_product_limit', true ) ) {
+                if( WCFM_Dependencies::wcfmu_plugin_active_check() ) {
+                    $actions .= '<a class="wcfm_product_duplicate wcfm-action-icon" href="#" data-proid="' . $wcfm_products_single->ID . '"><span class="wcfmfa fa-copy text_tip" data-tip="' . esc_attr__( 'Duplicate', 'wc-frontend-manager' ) . '"></span></a>';
+                } else {
+                    if( $is_wcfmu_inactive_notice_show = apply_filters( 'is_wcfmu_inactive_notice_show', true ) ) {
+                        $actions .= '<a class="wcfm_product_dummy_duplicate wcfm-action-icon" href="#" onclick="return false;"><span class="wcfmfa fa-copy text_tip" data-tip="' . __( 'Duplicate Product: Upgrade your WCFM to WCFM Ultimate to avail this feature.', 'wc-frontend-manager' ) . '"></span></a>';
+                    }
+                }
+            }
+            
+            if( $wcfm_products_single->post_status == 'publish' ) {
+                $actions .= ( apply_filters( 'wcfm_is_allow_edit_products', true ) && apply_filters( 'wcfm_is_allow_edit_specific_products', true, $wcfm_products_single->ID ) ) ? '<br/><a class="wcfm-action-icon" href="' . get_wcfm_edit_product_url($wcfm_products_single->ID, $the_product) . '"><span class="wcfmfa fa-edit text_tip" data-tip="' . esc_attr__( 'Edit', 'wc-frontend-manager' ) . '"></span></a>' : '';
+                
+                // Archive Product - 6.2.5
+                if( apply_filters( 'wcfm_is_allow_archive_product', true ) && apply_filters( 'wcfm_is_allow_edit_products', true ) && apply_filters( 'wcfm_is_allow_edit_specific_products', true, $wcfm_products_single->ID ) ) {
+                    $actions .= '<a class="wcfm_product_archive wcfm-action-icon" href="#" data-proid="' . $wcfm_products_single->ID . '"><span class="wcfmfa fa-archive text_tip" data-tip="' . esc_attr__( 'Archive Product', 'wc-frontend-manager' ) . '"></span></a>';
+                }
+            
+                $actions .= ( apply_filters( 'wcfm_is_allow_delete_products', true ) && apply_filters( 'wcfm_is_allow_delete_specific_products', true, $wcfm_products_single->ID ) ) ? '<a class="wcfm-action-icon wcfm_product_delete" href="#" data-proid="' . $wcfm_products_single->ID . '"><span class="wcfmfa fa-trash-alt text_tip" data-tip="' . esc_attr__( 'Delete', 'wc-frontend-manager' ) . '"></span></a>' : '';
+            } else {
+                $actions .= ( apply_filters( 'wcfm_is_allow_edit_specific_products', true, $wcfm_products_single->ID ) ) ? '<br/><a class="wcfm-action-icon" href="' . get_wcfm_edit_product_url($wcfm_products_single->ID, $the_product) . '"><span class="wcfmfa fa-edit text_tip" data-tip="' . esc_attr__( 'Edit', 'wc-frontend-manager' ) . '"></span></a>' : '';
+                $actions .= ( apply_filters( 'wcfm_is_allow_delete_specific_products', true, $wcfm_products_single->ID ) ) ? '<a class="wcfm_product_delete wcfm-action-icon" href="#" data-proid="' . $wcfm_products_single->ID . '"><span class="wcfmfa fa-trash-alt text_tip" data-tip="' . esc_attr__( 'Delete', 'wc-frontend-manager' ) . '"></span></a>' : '';
+            }
+            
             $wcfm_products_json_arr[$index][] =  apply_filters ( 'wcfm_products_actions',  $actions, $the_product );
             
             
@@ -568,127 +488,5 @@ function prodigi_load_templates(){
                                                 }';
                                                 
     echo $wcfm_products_json;
-    wp_die();
-    
 }
-
-add_action('wp_ajax_clone_prodigi_template', 'clone_prodigi_template');
-add_action('wp_ajax_no_priv_clone_prodigi_template','clone_prodigi_template');
-
-add_action( 'wp_ajax_delete_product_template', 'delete_product_template' );
-add_action( 'wp_ajax_no_priv_delete_product_template', 'delete_product_template' );
-
-
-
-function delete_product_template(){
-    // wp_delete_post( $_REQUEST['id'] );
-    $permission = check_ajax_referer( 'delete_template_nonce', 'nonce', false );
-    if(!$permission){
-        echo 'Post not deleted, and error occured';
-        wp_die();
-    }else{
-        $post_id = $_REQUEST['id'];
-        wp_update_post(array(
-            'ID'    =>  $post_id,
-            'post_status'   =>  'draft'
-            ));
-        wp_delete_post( $post_id, true );
-        echo 'Product Template '.$post_id.' Deleted Successfully';
-        wp_die();
-    }
-}
-
-
-
-
-
-// Clone Prodigi Template
-function clone_prodigi_template(){
-    global $wpdb;
-    $post_id = $_POST['id'];
-    if (isset($_POST['id'])){
-        $id = $_POST['id'];
-    }else{
-        $id = "";
-    }
-
-    global $post;
-    $response = [];
-    $author = get_current_user();
-
-    $post = get_post($post_id);
-    $prodigi_sku = get_post_meta($post_id, '_printable_sku', true);
-    $new_product = array(
-                'post_content'          => $post->post_content,
-                'post_title'            => $post->post_title .'-Copy',
-                'post_name'             => $post->post_name . '-copy',
-                'author' => $author,
-                'post_excerpt'          => $post->post_excerpt,
-                'post_status'           => 'draft',
-                'comment_status'        => $post->comment_status,
-                'ping_status'           => $post->ping_status,
-                'post_password'         => $post->post_password,
-                // 'post_name'          => $post->post_name,
-                'to_ping'               => $post->to_ping,
-                'pinged'                => $post->pinged,
-                'post_content_filtered' => $post->post_content_filtered,
-                'post_parent'           => $post->post_parent,
-                'menu_order'            => $post->menu_order,
-                'post_type'             => $post->post_type,
-                'post_mime_type'        => $post->post_mime_type
-            );
-
-        // Create new Product
-        $new_product_id = wp_insert_post($new_product);
-        // Update Custom Taxonomies
-        $taxonomies = get_object_taxonomies('product'); 
-       
-        foreach ($taxonomies as $taxonomy) {
-            $post_terms = wp_get_object_terms($post_id, $taxonomy, array('fields' => 'slugs'));
-            wp_set_object_terms($new_product_id, $post_terms, $taxonomy, false);
-        }
-
-
-            // Duplicate Product Meta
-
-        $store_user = wcfmmp_get_store();
-        $author = $store_user->data->user_nicename;
-        $prodigi = get_post_meta($post_id, '_printable_sku', true);
-          
-        $prodigi_product = get_posts(array(
-            'numberposts'   => 1,
-            'post_type'     => 'trifie_sku',
-            'meta_key'      => 'prodigi_trifie_sku',
-           'meta_value'    => $prodigi
-        ));
-              
-        $argt = array(
-            'post_type'=> 'product',
-            'author' => $store_user->data->ID,
-            'status'=> array('published', 'draft', )
-        );
-
-        $show_posts = new WP_Query($argt);
-        $count = $show_posts->found_posts +1;
-
-            $prodigi_product_id =$prodigi_product[0]->ID;
-            // $total_vendor_products = count_user_posts( $store_user->data->ID, 'product' ) + 1;
-            $trife_product_id = get_post_meta($prodigi_product_id, 'trifie_product_id', true);
-            $generated_sku = $author .'-' .$trife_product_id. '-' . $count;
-
-        $data = get_post_custom($post_id);
-            foreach ( $data as $key => $values) {
-            foreach ($values as $value) {
-                update_post_meta( $new_product_id, $key, maybe_unserialize( $value ) );// it is important to unserialize data to avoid conflicts.
-            }
-            }
-        
-        update_post_meta($new_product_id, '_sku', $generated_sku);
-        $results = get_post($new_product_id);
-        $result_meta = $trife_product_id;
-        $homeurl = get_home_url();
-        echo json_encode(array('success' => true, 'message'=>'Product Cloned will redirect shortly', 'result' => $results, 'homeurl'=>$homeurl, 'product_id' => $new_product_id));
-
-    exit;
-}
-
+		

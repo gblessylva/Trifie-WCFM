@@ -565,3 +565,9 @@ p.padded-paragraph{
 
     
 }
+
+select#prodigi_shipping.select{
+	width: 50% !important;
+    padding: 15px;
+    border: 1px solid #d1d1d1;
+}

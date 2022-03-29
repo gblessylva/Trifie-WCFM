@@ -2,10 +2,10 @@
 Contributors: (this should be a list of wordpress.org userid's)
 Donate link: https://github.com/gblessylva
 Tags: WCFM, Woocommerce, Prodigi
-Requires at least: 3.0.1
+Requires at least: 1.0.1
 Tested up to: 5.0
 Requires PHP: 5.6
-Stable tag: 4.3
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,10 +67,10 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 2. This is the second screen shot
 
 == Changelog ==
-
-= 1.0 =
-* A change since the previous version.
-* Another change.
+= 1.0.16 =
+* New feature added for variable products .
+= 1.0.15 =
+* Fixed Vendors products skipping review
 
 = 0.5 =
 * List versions from most recent at top to oldest at bottom.

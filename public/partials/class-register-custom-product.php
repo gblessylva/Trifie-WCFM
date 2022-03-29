@@ -161,8 +161,8 @@ function add_normal_templated_field( $fields, $product_id, $product_type, $wcfm_
     $is_new_val_cap = ( isset( $wcfm_capability_options['_printable_sku'] ) ) ? $wcfm_capability_options['_printable_sku'] : 'no';
     if($is_new_val_cap=='yes') return $fields;
     
-    $is_new_val = ( get_post_meta( $product_id, '_printable_sku', true ) );
-    // var_dump($is_new_val)
+    $printable_post_meta =  get_post_meta( $product_id, '_printable_sku', true ) ;
+    // var_dump($printable_post_meta  );
     // WP_Query arguments
     $args = array(
         'post_type'              => array( 'trifie_sku' ),
@@ -172,7 +172,7 @@ function add_normal_templated_field( $fields, $product_id, $product_type, $wcfm_
         'meta_key'  => 'prodigi_trifie_sku',
     ); 
     $query = new WP_Query( $args );
-    $options_array = array("" => "Select SKU");
+    $pritable_sku_array = array("" => "Select SKU");
     if($query->have_posts()){
         while ( $query->have_posts() ) {
             $query->the_post();
@@ -181,7 +181,7 @@ function add_normal_templated_field( $fields, $product_id, $product_type, $wcfm_
             $options = get_post_meta($trifie_post_id, 'prodigi_trifie_sku', true);
             $options = array_map('trim', explode(',', $options));
             foreach($options as $option){
-                $options_array[$option] = $option;
+                $pritable_sku_array[$option] = $option;
             }
             
 
@@ -190,17 +190,17 @@ function add_normal_templated_field( $fields, $product_id, $product_type, $wcfm_
         wp_reset_postdata();
     }   
     
-    foreach($options_array as $option){
-        if($is_new_val !=''){
+    foreach($pritable_sku_array as $option){
+        if($printable_post_meta !=''){
             $new_field = array( "_printable_sku" => 
             array(  
             'type' => 'select', 
             'label'=> 'Printable Product SKU',
             'class' => 'wcfm-select wcfm-printable wcfm_ele wcfm_product_type  simple non-booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking' . ' ' . $wcfm_wpml_edit_disable_element,
             'desc_class' => 'wcfm_title wcfm_ele virtual_ele_title checkbox_title simple non-booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking' . ' ' . $wcfm_wpml_edit_disable_element, 
-            'value' =>  $is_new_val,
-            'options'  => array($is_new_val=>$is_new_val),
-            'selected' => $is_new_val,
+            'value' =>  $printable_post_meta,
+            'options'  => array($printable_post_meta=>$printable_post_meta),
+            // 'selected' => $is_new_val,
             'id'=>'_printable_sku'
     
             )
@@ -213,17 +213,21 @@ function add_normal_templated_field( $fields, $product_id, $product_type, $wcfm_
             'label'=> 'Printable Product SKU',
             'class' => 'wcfm-select wcfm-printable wcfm_ele wcfm_product_type  simple non-booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking' . ' ' . $wcfm_wpml_edit_disable_element,
             'desc_class' => 'wcfm_title wcfm_ele virtual_ele_title checkbox_title simple non-booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking' . ' ' . $wcfm_wpml_edit_disable_element, 
-            'value' =>  $is_new_val,
-            'options'  => $options_array,
-            'selected' => $is_new_val,
+            'value' =>  $printable_post_meta,
+            'options'  => $pritable_sku_array,
+            'selected' => $printable_post_meta,
             'id'=>'_printable_sku_field'
     
             )
          );
             
         }
+
+
+        if($product_type != 'variable'){
        
          return array_slice( $fields, 0, 4, true ) + $new_field + array_slice( $fields, 4, count( $fields ) - 4, true );
+        }
             
     }
 
@@ -251,7 +255,7 @@ function update_printable_sku(){
     $user_args = array(
         'author'        =>  $current_user->ID, 
         'post_type'     =>  'product',
-        'status'       =>  array('publish','draft', 'pending', 'private', 'protected', 'future'),
+        'status'       =>  array('publish','draft', 'pending', 'private', 'protected', 'future', ),
         'posts_per_page' => -1 // no limit
       );
 
@@ -311,7 +315,7 @@ function add_copied_templated_field( $fields, $product_id, $product_type, $wcfm_
     array( 'desc' => __( 'Printable Product SKU', 'wc-frontend-manager' ), 
     'type' => 'select', 
     'label'=> 'Printable Product SKU',
-    'class' => 'wcfm-select wcfm-printable wcfm_ele wcfm_product_type  simple non-booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking' . ' ' . $wcfm_wpml_edit_disable_element,
+    'class' => 'wcfm-select wcfm-printable wcfm_ele wcfm_product_type  simple variable external grouped booking' . ' ' . $wcfm_wpml_edit_disable_element,
     'desc_class' => 'wcfm_title wcfm_ele virtual_ele_title checkbox_title simple non-booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking' . ' ' . $wcfm_wpml_edit_disable_element, 
     'value' =>  $prodigi_sku,
     'options'  => array( $prodigi_sku => $prodigi_sku),
@@ -335,7 +339,7 @@ function add_file_upload_fields($fields, $product_id, $product_type, $wcfm_is_tr
         'value'=> $printable_image_src,
         "attributes" => array( "readonly" => true ),
         'id'=>'_printable_image',
-        'class'=> 'wcfm-hidden _printable_sku wcfm-printable wcfm_ele wcfm_product_type  simple non-booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking',
+        'class'=> 'wcfm-hidden _printable_sku wcfm-printable wcfm_ele wcfm_product_type  simple variable external grouped booking',
         
         ),
     );
@@ -346,6 +350,8 @@ function add_file_upload_fields($fields, $product_id, $product_type, $wcfm_is_tr
 // Display Min Price
 function add_min_price_fields($fields, $product_id, $product_type, $wcfm_is_translated_product, $wcfm_wpml_edit_disable_element){
     $prodigi_product = $_GET['prodigi-id'];
+    // var_dump($product_type);
+
     $has_admin_price = get_post_meta($prodigi_product, 'trifie_product_min_price', true);
     $saved_admin_price = get_post_meta($product_id, 'trifie_product_min_price', true);
     $currency = get_woocommerce_currency_symbol();
@@ -358,7 +364,7 @@ function add_min_price_fields($fields, $product_id, $product_type, $wcfm_is_tran
             'value'=> $has_admin_price,
             "attributes" => array( "readonly" => true ),
             'id'=>'_admin_min_price',
-            'class'=> 'wcfm-text wcfm_ele wcfm_non_negative_input wcfm_half_ele simple external non-subscription non-variable-subscription non-auction non-redq_rental non-accommodation-booking non-lottery non-pw-gift-card',
+            'class'=> 'wcfm-text wcfm_ele wcfm_non_negative_input wcfm_half_ele simple simple external grouped booking',
             
             ),
         );
@@ -391,12 +397,15 @@ function add_min_price_fields($fields, $product_id, $product_type, $wcfm_is_tran
         'value'=> $set_min_price,
         "attributes" => array( "readonly" => true ),
         'id'=>'_admin_min_price',
-        'class'=> 'wcfm-text wcfm_ele wcfm_non_negative_input wcfm_half_ele simple external non-subscription non-variable-subscription non-auction non-redq_rental non-accommodation-booking non-lottery non-pw-gift-card',
+        'class'=> 'wcfm-text wcfm_ele wcfm_non_negative_input wcfm_half_ele simple  external grouped booking',
         
         ),
     );
 }
-    return array_slice( $fields, 0, 5, true ) + $new_field + array_slice( $fields, 5, count( $fields ) - 5, true );
+    if($product_type != 'variable'){
+        return array_slice( $fields, 0, 5, true ) + $new_field + array_slice( $fields, 5, count( $fields ) - 5, true );
+    }
+    
 };
 
 
@@ -408,35 +417,42 @@ if(isset($_GET['prodigi-id'])){
 }
 
 add_filter( 'wcfm_product_manage_fields_general', 'add_file_upload_fields', 9, 6 );
+
 add_filter('wcfm_product_manage_fields_pricing', 'add_min_price_fields', 90, 6);
 
 // // Saving product fields
-function save_new_field_values( $new_product_id, $wcfm_products_manage_form_data ) {
+function save_new_field_values( $trifie_product_id, $wcfm_products_manage_form_data ) {
     $user = wp_get_current_user();
     $is_trife_admin = $user->roles['administrator'];        
     // var_dump($is_admin_trife_admin);
-    $is_new_val = $wcfm_products_manage_form_data['_printable_sku'] ;
+    $is_printable_sku_value = $wcfm_products_manage_form_data['_printable_sku'] ;
     $has_admin_price = $wcfm_products_manage_form_data['_admin_min_price'] ;
 
     $pritable_image_url = $wcfm_products_manage_form_data['_printable_image'] ;
     $admin_price = $wcfm_products_manage_form_data['regular_price'];
-    update_post_meta( $new_product_id, '_printable_sku', $is_new_val );
-    update_post_meta( $new_product_id, '_printable_image', $pritable_image_url );
-    update_post_meta($new_product_id, 'trifie_product_min_price', $has_dmin_price);
+    update_post_meta( $trifie_product_id, '_printable_sku', $is_printable_sku_value );
+    update_post_meta( $trifie_product_id, '_printable_image', $pritable_image_url );
+    update_post_meta($trifie_product_id, 'trifie_product_min_price', $has_dmin_price);
 
     if($user->roles==['administrator']){
-        update_post_meta($new_product_id, '_is_admin_product', 'yes');
-        update_post_meta($new_product_id, 'trifie_product_min_price', $has_admin_price);
+        update_post_meta($trifie_product_id, '_is_admin_product', 'yes');
+        update_post_meta($trifie_product_id, 'trifie_product_min_price', $has_admin_price);
         // var_dump('He is admin');
        
     }else{
-        update_post_meta($new_product_id, '_is_admin_product', 'no');
+        update_post_meta($trifie_product_id, '_is_admin_product', 'no');
     }
 }
 
 function wcfm_required_product_fields_pricing( $price_fields, $product_id, $product_type ) {
-	if( isset( $price_fields['regular_price'] ) )  { $price_fields['regular_price']['custom_attributes'] = array( 'required' => 1 ); }
-	return $price_fields;
+	$is_product_template = $POST['template_value'];
+    $user = wp_get_current_user();
+    if($user->roles !=['administrator']){
+        if( isset( $price_fields['regular_price'] ) )  { $price_fields['regular_price']['custom_attributes'] = array( 'required' => 1 ); }
+
+    }
+ 
+    return $price_fields;
 }
 add_filter( 'wcfm_product_manage_fields_pricing', 'wcfm_required_product_fields_pricing', 50, 3 );
 
@@ -446,7 +462,8 @@ function add_high_resultion_image ($product_id){
         if($printable_image_src){
             $src = $printable_image_src;
         }else{
-            $src = plugin_dir_url(__FILE__) . '../../includes/libs/uploads/images/Placeholder.png';
+            $src = '';
+            // plugin_dir_url(__FILE__) . '../../includes/libs/uploads/images/Placeholder.png';
         }
 
     echo "
@@ -454,8 +471,9 @@ function add_high_resultion_image ($product_id){
         <h4> Select Full Resolution Image </h3>
         <img src='$src' id='high-res'>
         <button id='printable-image-selector' class='wcfm-button'> Select Image </button> 
-        </div>
-    ";
+            </div>
+        ";
+        
 }
 
 
@@ -463,37 +481,48 @@ add_action('wcfm_product_manager_right_panel_before', 'add_high_resultion_image'
 
 function set_as_product_template ($product_id){
     global $wp, $WCFM, $wc_product_attributes;
-    // $printable_image_src = get_post_meta( $product_id, '_printable_image', true );
-    // // var_dump($printable_image_src);
-    // if($printable_image_src){
-    //     $src = $printable_image_src;
-    // }else{
-    //     $src = plugin_dir_url(__FILE__) . '../../includes/libs/uploads/images/Placeholder.png';
-    // }
 
     $user = wp_get_current_user();
     if($user->roles==['administrator']){
+            $is_product_template = ( get_post_meta( $product_id, '_is_product_tamplate', true) == 'enable' ) ? 'enable' : '';
             $WCFM->wcfm_fields->wcfm_generate_form_field(array(
                 "is_product_template" => array('desc' => __('Set as Product Template', 'wc-frontend-manager') , 
                 'type' => 'checkbox', 
-                'class' => 'wcfm-checkbox wcfm_ele wcfm_half_ele_checkbox simple booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking non-pw-gift-card', 
-                'desc_class' => 'padded-paragraph wcfm_title wcfm_ele virtual_ele_title checkbox_title simple booking non-variable-subscription non-job_package non-resume_package non-redq_rental non-accommodation-booking non-pw-gift-card',
-                'value' => 'enable', 
-                ))) ;
+                'class' => 'wcfm-checkbox wcfm_ele wcfm_half_ele_checkbox simple booking variable variable-subscription', 
+                'desc_class' => 'padded-paragraph wcfm_title wcfm_ele virtual_ele_title checkbox_title simple booking variable variable-subscription',
+                'value' => $is_product_template, 
+                'dfvalue'=>$is_product_template,
+            ),
+            "template_value" => array( 
+                'type' => 'hidden', 
+                'class' => 'wcfm-text wcfm_ele wcfm_half_ele_checkbox simple booking variable variable-subscription', 
+                'value' => '', 
+            )
+            )
+            ) ;
                   
             } 
 
               
 }
 
+function save_as_product_template($trifie_product_id, $wcfm_products_manage_form_data){
+    $is_product_template = $wcfm_products_manage_form_data['is_product_template'];
+    if($is_product_template){
+        update_post_meta($trifie_product_id, '_is_product_tamplate', 'enable');
+        wp_update_post(array(
+            'ID'    =>  $trifie_product_id,
+            'post_status'   =>  'Template'
+            ));
+    }else{
+        delete_post_meta($trifie_product_id, '_is_product_tamplate', 'enable');
+    }
+}
 
+add_action('wcfm_product_manager_left_panel_before', 'set_as_product_template', 10, 2);
+// add_filter('wcfm_products_manage_variable_start', 'set_as_product_template',1, 1);
 
-
-    add_action('wcfm_product_manager_left_panel_before', 'set_as_product_template', 10, 2);
-
-
-
-
+add_action( 'after_wcfm_products_manage_meta_save', 'save_as_product_template', 10, 2 );
 
 
 add_action( 'after_wcfm_products_manage_meta_save', 'save_new_field_values', 10, 2 );
@@ -521,7 +550,7 @@ function wcfm_add_product_password($product_id){
 					<input type="hidden" name="hidden_post_password" id="hidden-post-password" value="">
 					
 					<input type="hidden" name="hidden_post_visibility" id="hidden-post-visibility"  value="public" >
-					<input type="radio" name="visibility" id="visibility-radio-public visbility-radio" value="publish"
+					<input type="radio" name="visibility" class='visibility-radio-public' id="visibility-radio-public visbility-radio" value="publish"
                         <?php if($status != 'private' || $password == '' ){
                             echo 'checked';
                         }?>
@@ -552,11 +581,18 @@ function wcfm_add_product_password($product_id){
                             
                     </span>
 					<input type="radio" name="visibility" id="visibility-radio-private visbility-radio" 
-                    <?php if($status == 'private'){
+                    <?php 
+                        if($status == 'private'){
                             echo 'checked';
                         }?>
                     value="private"> <label for="visibility-radio-private" style="padding-bottom: 10px;" class="selectit">Private</label><br>
-
+                    
+                    <input type="radio" name="visibility" class='visibility-radio-template' id="visibility-radio-template visbility-radio" 
+                    <?php 
+                        if($status == 'template'){
+                            echo 'checked';
+                        }?>
+                    value="template"> <label for="visibility-radio-template" style="padding-bottom: 10px;" class="selectit">Template</label><br>
 					<p>
 						<a href="#visibility" class="wcfm-save-post-visibility wcfm-hide-if-no-js button">OK</a>
 						<a href="#visibility" class="wcfm-cancel-post-visibility wcfm-hide-if-no-js button-cancel">Cancel</a>
@@ -568,13 +604,13 @@ function wcfm_add_product_password($product_id){
 }
 
 // // Saving product fields
-function save_password_field_values( $new_product_id, $wcfm_products_manage_form_data ) {
+function save_password_field_values( $trifie_product_id, $wcfm_products_manage_form_data ) {
     $is_visibility = $wcfm_products_manage_form_data['visibility'];
     $has_product_password = $wcfm_products_manage_form_data['post_password'];
-
+    $is_product_template = $wcfm_products_manage_form_data['is_product_template'];
     if($is_visibility == 'password'){
         $pass_arg = array(
-            'ID'            => $new_product_id,
+            'ID'            => $trifie_product_id,
             'post_status'   => 'publish',
             'post_password' => $has_product_password,
             'post_name'     => sanitize_title( $wcfm_products_manage_form_data['post_title'] ),
@@ -587,23 +623,30 @@ function save_password_field_values( $new_product_id, $wcfm_products_manage_form
             $post->post_password = $has_product_password;
         } );
         wp_update_post($pass_arg);
-        update_post_meta($new_product_id, '_post_dwp', $has_product_password);
+        update_post_meta($trifie_product_id, '_post_dwp', $has_product_password);
         
         $terms = array( 'exclude-from-search', 'exclude-from-catalog' ); // for hidden..
-        wp_set_post_terms( $new_product_id, $terms, 'product_visibility', false ); 
+        wp_set_post_terms( $trifie_product_id, $terms, 'product_visibility', false ); 
         
+    }else if($is_visibility == 'template'){
+        wp_update_post(array(
+            'ID'            => $trifie_product_id,
+            'post_status'=> 'template'
+        ));
+        update_post_meta($trifie_product_id, '_is_product_tamplate', 'enable');
     }else if($is_visibility != 'password'){
         $arg = array(
-            'ID'            => $new_product_id,
-            'post_status'   => $is_visibility,
+            'ID'            => $trifie_product_id,
+            // 'post_status'   => $is_visibility,
             'post_password' => '',
             'post_name'     => sanitize_title( $wcfm_products_manage_form_data['post_title'] ),
         );
         wp_update_post($arg);
-        delete_post_meta($new_product_id, '_post_dwp', '');
+        delete_post_meta($trifie_product_id, '_post_dwp', '');
+        delete_post_meta($trifie_product_id, '_is_product_tamplate', '');
         $terms = array( 'exclude-from-search', 'exclude-from-catalog' ); // for hidden..
-        wp_set_post_terms( $new_product_id, $terms, 'product_visibility', false );
-        wp_remove_object_terms($new_product_id, $terms, 'product_visibility');
+        wp_set_post_terms( $trifie_product_id, $terms, 'product_visibility', false );
+        wp_remove_object_terms($trifie_product_id, $terms, 'product_visibility');
     }
 
    
@@ -620,7 +663,25 @@ function wpdocs_custom_post_status(){
         'label_count'               => _n_noop( 'Protected <span class="count">(%s)</span>', 'Protected <span class="count">(%s)</span>' ),
     ) );
 }
+
 add_action( 'init', 'wpdocs_custom_post_status' );
+
+// Register Template Post Stattus
+// Register Custom Status
+function register_template_status() {
+
+	$args = array(
+		'label'                     => _x( 'Template', 'Status General Name', 'trifie' ),
+		'label_count'               => _n_noop( 'Template (%s)',  'Templates (%s)', 'trifie' ), 
+		'public'                    => false,
+		'show_in_admin_all_list'    => false,
+		'show_in_admin_status_list' => false,
+		'exclude_from_search'       => true,
+	);
+	register_post_status( 'Template', $args );
+
+}
+add_action( 'init', 'register_template_status', 0 );
 
 add_action( 'after_wcfm_products_manage_meta_save', 'save_password_field_values', 10, 2 );
 
@@ -630,3 +691,4 @@ wp_enqueue_script( 'admin-page-script', plugin_dir_url( __FILE__ ) . '../js/trif
 wp_enqueue_script('select2-script', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',  array('jquery'), '4.1.0', true);
 wp_enqueue_style('select2-styles', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',);
 wp_enqueue_style('manager-styles',plugin_dir_url(__FILE__) . '../js/trife-manager.css');
+
