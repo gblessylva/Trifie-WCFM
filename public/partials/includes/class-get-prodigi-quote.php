@@ -1,8 +1,24 @@
 <?php
 
- 
-
 add_filter('woocommerce_billing_fields', 'custom_woocommerce_billing_fields');
+add_action('woocommerce_before_shipping_calculator', 'prodigi_field_calculator');
+
+function prodigi_field_calculator(){
+  echo '
+    <div>
+      <p class="shipping-error"></p>
+      <label style="font-size:19px; color: black;">Select Shiping Method</label>
+      <br>
+      <select name="prodigi_shipping" id="prodigi_shipping" class="custom-shipping" style="padding:10px 20px; border: 1px solid #d4d4d4; margin-top:5px; ">
+        <option value="budget">Budget</option>  
+        <option value="standard">Standard</option> 
+        <option value="express">Express</option>     
+      <select>
+    </div>
+
+  ';
+}
+
 
 function custom_woocommerce_billing_fields($fields)
 {
@@ -21,6 +37,7 @@ function custom_woocommerce_billing_fields($fields)
         'default' => 'budget', // set default value
         
     );
+
 
     return $fields;
 }
@@ -44,7 +61,7 @@ function get_prodigi_quote() {
   global $woocommerce;
 
     $items = $woocommerce->cart->get_cart();
-    
+
     if ( isset($_POST['shipping_price']) ) {
         WC()->session->set('shipping_price', ($_POST['shipping_price'] ) );
         echo  WC()->session->get('shipping_price');
@@ -144,6 +161,7 @@ function get_prodigi_quote() {
           ),
         ),
       ));
+      
     //   For Tech
     $tech_array = json_encode( array (
         'shippingMethod' => $shipping_price,
@@ -417,6 +435,7 @@ function get_prodigi_quote() {
       ));
 
       $body_array;
+
       if($current_trifie_category_slug == 'patch-round'){
         $body_array = $patch_round_array;
         }elseif($current_trifie_category_slug == 'gallery'){
@@ -477,15 +496,24 @@ add_action( 'woocommerce_cart_calculate_fees', 'custom_fee_based_on_cart_total',
 
 function custom_fee_based_on_cart_total( $cart ) {
 
-    if ( is_admin() && ! defined( 'DOING_AJAX' ) ) return;
+    // if ( is_admin() && ! defined( 'DOING_AJAX' ) ) return;
 
     // The conditional Calculation
     $fee = get_prodigi_quote();
+    // $fee = 0;
 
     // if ( $fee != 0 ) 
+    $shipping_method = WC()->session->get('shipping_price');
+
+      // if ($fee == 0){
+      //   echo'
+      //     <h3 style="color:red"> The selected shipping ' .$shipping_method.  ' method is not available in your location</h3>
+      //   ';
+      // }
         $cart->add_fee( __( "Shipping Cost", "woocommerce" ), $fee, false );
         
 }
+
 
 
 

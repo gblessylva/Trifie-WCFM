@@ -262,12 +262,56 @@
           shipping_price: this.value
         },
       }).done(function(data){
-        console.log(data);
+        console.log( data);
         $('body').trigger('update_checkout');
       });
       })
+      
+       $('body').on('updated_checkout', function(data){  
+       var rtfee = $('.fee .woocommerce-Price-amount bdi').text();
+       var rtfee = rtfee.replace(/[^0-9\.]+/g,"");
+       var rtfee = parseFloat(rtfee);
+      if(rtfee > 0){
+        $('#cost_value').val(rtfee);
+        $('#cost_value').trigger('change');
+      }else{
+        var errorMessage = $('#order_review_heading');
+        errorMessage.text('The selected Shipping method ' +$('#prodigi_shipping').val() + ' is not available for your location. Please select another shipping method.');
+        errorMessage.css({'color':'red', 'text-align':'center', 'font-size': '12px'} );
+      }
+
+      // $( 'body' ).on( 'updated_wc_div', function(){
+      //   console.log('updated_cart_totals');
+      // })
+ 
+    })
+
+    jQuery( document.body ).on( 'updated_wc_div', do_magic );
+    jQuery( document.body ).on( 'updated_cart_totals', do_magic );
+
+    function do_magic() {
+      var rtfee = $('.fee .woocommerce-Price-amount bdi').text();
+       var rtfee = rtfee.replace(/[^0-9\.]+/g,"");
+       var rtfee = parseFloat(rtfee);
+      if(rtfee > 0){
+        $('#cost_value').val(rtfee);
+        $('#cost_value').trigger('change');
+      }else{
+        var errorMessage = $('.shipping-error');
+        errorMessage.text('The selected Shipping method ' +$('#prodigi_shipping').val() + ' is not available for your location. Please select another shipping method.');
+        errorMessage.css({'color':'red', 'text-align':'center', 'font-size': '12px'} );
+      }
+      }
+
+    // $('#prodigi_shipping').change( function(){
+    //   console.log('chanded')
+    //   $( 'body').trigger( 'updated_wc_div' )
+    // })
+
 
    })( jQuery );
+
+
 
    
 let variablePricingField = document.querySelectorAll('[data-name="regular_price"]');
