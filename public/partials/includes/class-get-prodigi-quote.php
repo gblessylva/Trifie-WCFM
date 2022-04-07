@@ -1,22 +1,21 @@
 <?php
-
 add_filter('woocommerce_billing_fields', 'custom_woocommerce_billing_fields');
-add_action('woocommerce_before_shipping_calculator', 'prodigi_field_calculator');
+add_action('woocommerce_before_shipping_calculator', 'prodigi_shipping_cart');
 
-function prodigi_field_calculator(){
-  echo '
-    <div>
-      <p class="shipping-error"></p>
-      <label style="font-size:19px; color: black;">Select Shiping Method</label>
-      <br>
-      <select name="prodigi_shipping" id="prodigi_shipping" class="custom-shipping" style="padding:10px 20px; border: 1px solid #d4d4d4; margin-top:5px; ">
-        <option value="budget">Budget</option>  
-        <option value="standard">Standard</option> 
-        <option value="express">Express</option>     
-      <select>
-    </div>
-
-  ';
+function prodigi_shipping_cart(){
+    echo ' <p class="shipping-error"></p>';
+    woocommerce_form_field('prodigi_shipping_cart', array(
+        'type' => 'select',
+        'options' => array(
+            'budget' => 'Budget',
+            'standard' => 'Standard',
+            'express' => 'Express',
+        ),
+        'label' => __('Select Shipping Method'),
+        'required' => true,
+        'class' => array('form-row-wide'),
+        'label_class' => array('form-row-wide'),
+    ),  WC()->session->get('shipping_price'));
 }
 
 
@@ -54,7 +53,8 @@ function prodigi_email_reorder( $checkout_fields ) {
 add_action('wp_ajax_get_prodigi_quote', 'get_prodigi_quote');
 add_action('wp_ajax_nopriv_prodigi_quote', 'get_prodigi_quote');
 
-
+add_action('wp_ajax_get_prodigi_quote_price', 'get_prodigi_quote_price');
+add_action('wp_ajax_nopriv_get_prodigi_quote_price', 'get_prodigi_quote_price');
 
 function get_prodigi_quote() {
 
@@ -64,8 +64,8 @@ function get_prodigi_quote() {
 
     if ( isset($_POST['shipping_price']) ) {
         WC()->session->set('shipping_price', ($_POST['shipping_price'] ) );
-        echo  WC()->session->get('shipping_price');
-        die();
+        // wp_send_json( WC()->session->get('shipping_price'));
+        // die;
     }
 
     
@@ -97,6 +97,7 @@ function get_prodigi_quote() {
         $custome_shipping_country = WC()->customer->get_shipping_country();
         $shipping_price = WC()->session->get('shipping_price');
         $copies = $woocommerce->cart->get_cart_item_quantities();
+        // var_dump($copies);
     
         // For patchrounds
     $patch_round_array = json_encode( array (
@@ -108,7 +109,7 @@ function get_prodigi_quote() {
             0 => 
             array (
                 'sku' => $prodigiSKU,
-                'copies' => 1,
+                'copies' => $copies,
                 'assets' => 
                 array (
                 0 => 
@@ -150,7 +151,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => 1,
+            'copies' => $copies,
             'assets' => 
             array (
               0 => 
@@ -172,7 +173,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => 1,
+            'copies' => $copies,
             'assets' => 
             array (
               0 => 
@@ -193,7 +194,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => 1,
+            'copies' => $copies,
             'assets' => 
             array (
               0 => 
@@ -215,11 +216,11 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => 1,
+            'copies' => $copies,
             'attributes' => 
             array (
               'color' => 'white',
-              'size' => 'M',
+              'size' => 'm',
             ),
             'assets' => 
             array (
@@ -241,7 +242,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => 1,
+            'copies' => $copies,
             'attributes' => 
             array (
               'color' => 'white',
@@ -267,7 +268,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => 1,
+            'copies' => $copies,
             // 'attributes' => 
             // array (
             //   'wrap' => 'ImageWrap',
@@ -292,7 +293,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => 1,
+            'copies' => $copies,
             'attributes' => 
             array (
                 'color' => 'black',
@@ -319,7 +320,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => 1,
+            'copies' => $copies,
             'attributes' => 
             array (
                 'color' => 'black',
@@ -348,7 +349,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => 1,
+            'copies' => $copies,
             // 'attributes' => 
             // array (
             //     'color' => 'black',
@@ -374,7 +375,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => 1,
+            'copies' => $copies,
             'assets' => 
             array (
               0 => 
@@ -395,7 +396,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => 1,
+            'copies' => $copies,
             // 'attributes' => 
             // array (
             //     'color' => 'black',
@@ -422,7 +423,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => 1,
+            'copies' => $copies,
             'assets' => 
             array (
               0 => 
@@ -435,7 +436,6 @@ function get_prodigi_quote() {
       ));
 
       $body_array;
-
       if($current_trifie_category_slug == 'patch-round'){
         $body_array = $patch_round_array;
         }elseif($current_trifie_category_slug == 'gallery'){
@@ -452,6 +452,8 @@ function get_prodigi_quote() {
         $body_array = $framed_array;
         }elseif($current_trifie_category_slug == 'stretched-canvas'){
         $body_array = $stretched_canvas_array;
+        }elseif($current_trifie_category_slug == 'apparel'){
+        $body_array = $apparels_array;
         }else{
         $body_array = $unknown_array;
         }
@@ -474,11 +476,23 @@ function get_prodigi_quote() {
         $response = wp_remote_post( 'https://api.sandbox.prodigi.com/v4.0/quotes', $quote_content );
         $response_body = wp_remote_retrieve_body( $response );
         $response_body = json_decode( $response_body, true );
-        $shippingCost = intval($response_body['quotes'][0]['costSummary']['shipping']['amount']);
+		if($response_body['outcome']=='NotAvailable'){
 
+      echo __('<div class="alert alert-danger" role="alert"> <p> Sorry, this product is not available in your country </p>. </div>', 'trifie');
+			// echo '<p style="color:red; text-align:center;">Product Not Available in your country</p>';
+		}else{
+      
+			 $shippingCost = intval($response_body['quotes'][0]['costSummary']['shipping']['amount']);
+		}
+       
+	// $shippingCost = intval($response_body['quotes'][0]['costSummary']['shipping']['amount']);
     }
     
-    // var_dump($response);
+    // var_dump( json_decode ($body_array, true) );
+    // wp_send_json($response_body);
+    // wp_die();
+    // var_dump($copies);
+      
     return $shippingCost;
 
 }
@@ -503,7 +517,7 @@ function custom_fee_based_on_cart_total( $cart ) {
     // $fee = 0;
 
     // if ( $fee != 0 ) 
-    $shipping_method = WC()->session->get('shipping_price');
+    // $shipping_method = WC()->session->get('shipping_price');
 
       // if ($fee == 0){
       //   echo'
@@ -556,3 +570,6 @@ function view_prodigi_shipping_details( $order_id ){  ?>
 <?php }
 
 
+function get_prodigi_quote_price(){
+  wp_send_json(get_prodigi_quote());
+}

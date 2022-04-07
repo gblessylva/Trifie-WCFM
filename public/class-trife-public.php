@@ -88,6 +88,9 @@ class Trife_Public {
 		 */
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/trife-public.css', array(), $this->version, 'all' );
+		
+		// enqueue Bootstrap
+		// wp_enqueue_style( $this->plugin_name, 'https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css', array(), $this->version, 'all' );
 		wp_enqueue_style( $this->plugin_name, 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css', array(), $this->version, 'all' );
 
 	}

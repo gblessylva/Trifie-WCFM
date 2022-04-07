@@ -252,17 +252,16 @@
 
       $("#prodigi_shipping").change(function() {
         console.log(this.value);
-       
-
       $.ajax({
         url: '/wp-admin/admin-ajax.php',
         type: 'POST',
         data: {
           action: 'get_prodigi_quote',
+          // action: 'rc_generate_p',
           shipping_price: this.value
         },
       }).done(function(data){
-        console.log( data);
+        console.log ('data is', data);
         $('body').trigger('update_checkout');
       });
       })
@@ -278,18 +277,19 @@
         var errorMessage = $('#order_review_heading');
         errorMessage.text('The selected Shipping method ' +$('#prodigi_shipping').val() + ' is not available for your location. Please select another shipping method.');
         errorMessage.css({'color':'red', 'text-align':'center', 'font-size': '12px'} );
+        console.log(errorMessage);
       }
 
-      // $( 'body' ).on( 'updated_wc_div', function(){
-      //   console.log('updated_cart_totals');
-      // })
+      $( 'body' ).on( 'updated_wc_div', function(){
+        console.log('updated_cart_totals');
+      })
  
     })
 
-    jQuery( document.body ).on( 'updated_wc_div', do_magic );
-    jQuery( document.body ).on( 'updated_cart_totals', do_magic );
+    jQuery( document.body ).on( 'updated_wc_div', update_prodigi_fee_cart );
+    jQuery( document.body ).on( 'updated_cart_totals', update_prodigi_fee_cart );
 
-    function do_magic() {
+    function update_prodigi_fee_cart() {
       var rtfee = $('.fee .woocommerce-Price-amount bdi').text();
        var rtfee = rtfee.replace(/[^0-9\.]+/g,"");
        var rtfee = parseFloat(rtfee);
@@ -303,10 +303,23 @@
       }
       }
 
-    // $('#prodigi_shipping').change( function(){
-    //   console.log('chanded')
-    //   $( 'body').trigger( 'updated_wc_div' )
-    // })
+    $('#prodigi_shipping_cart').change( function(){
+      $.ajax({
+        type: "post",
+        url: "/wp-admin/admin-ajax.php",
+        data: {
+          action: 'get_prodigi_quote_price',
+          shipping_price: this.value
+        },
+        
+        success: function (response) {
+          $("[name='calc_shipping']" ).trigger( "click" );
+          
+          
+        }
+      });
+     
+    })
 
 
    })( jQuery );

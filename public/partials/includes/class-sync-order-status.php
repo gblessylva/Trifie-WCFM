@@ -28,23 +28,28 @@ if (strpos($_SERVER['REQUEST_URI'], "orderslist") !== false) {
     
     $response_body = wp_remote_retrieve_body( $response );
     $response_body = json_decode( $response_body, true );
-    $response_order = $response_body['orders'];
+    $response_order = array_reverse( $response_body['orders']);
+    var_dump($response_body['orders'][0]['shipments']);
+   
     
     $prodigi_order_id_array = array();
     $prodigi_order_status_array = array();
     $woo_order_id_array = array();
+    $shipment_array = array();
     
     foreach ($response_order as $key => $prodigi_order) {
         $prodigi_order_id = $prodigi_order['merchantReference'];
         $prodigi_order_status = $prodigi_order['status']['stage'];
-        // var_dump($prodigi_order_status);
+        $shipment = $prodigi_order['shipments'];
+        $shipment_array[] = $shipment;
         $prodigi_order_id_array[] = $prodigi_order_id;
         $prodigi_order_status_array[] = $prodigi_order_status;
         // var_dump($prodigi_order_status);
         
     }
     
-    
+    // var_dump($shipment_array);
+
         foreach($orders as $order_id){
             $order = wc_get_order($order_id);
             $status = $order->get_status();

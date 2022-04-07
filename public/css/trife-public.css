@@ -125,3 +125,30 @@ div#wcfm-visibility\ wcfm-visibility.misc-pub-section.misc-pub-visibility {
     border-radius: 4px;
     color: white;
 }
+
+select#prodigi_shipping_cart.select{
+    width: 80%;
+    padding: 10px;
+    margin-top: 10px;
+    
+}
+.alert{
+    /* position: relative; */
+    /* padding: 0.75rem 1.25rem; */
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+.alert-danger{
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    font-size: 18px;
+    align-items: center;
+    justify-content: center;
+    padding-top: 30px;
+}
