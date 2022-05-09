@@ -109,7 +109,7 @@ function get_prodigi_quote() {
             0 => 
             array (
                 'sku' => $prodigiSKU,
-                'copies' => $copies,
+                'copies' => 1,
                 'assets' => 
                 array (
                 0 => 
@@ -151,7 +151,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => $copies,
+            'copies' => 1,
             'assets' => 
             array (
               0 => 
@@ -173,7 +173,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => $copies,
+            'copies' => 1,
             'assets' => 
             array (
               0 => 
@@ -194,7 +194,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => $copies,
+            'copies' => 1,
             'assets' => 
             array (
               0 => 
@@ -216,7 +216,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => $copies,
+            'copies' => 1,
             'attributes' => 
             array (
               'color' => 'white',
@@ -242,7 +242,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => $copies,
+            'copies' => 1,
             'attributes' => 
             array (
               'color' => 'white',
@@ -268,7 +268,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => $copies,
+            'copies' => 1,
             // 'attributes' => 
             // array (
             //   'wrap' => 'ImageWrap',
@@ -293,7 +293,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => $copies,
+            'copies' => 1,
             'attributes' => 
             array (
                 'color' => 'black',
@@ -320,7 +320,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => $copies,
+            'copies' => 1,
             'attributes' => 
             array (
                 'color' => 'black',
@@ -349,7 +349,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => $copies,
+            'copies' => 1,
             // 'attributes' => 
             // array (
             //     'color' => 'black',
@@ -375,7 +375,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => $copies,
+            'copies' => 1,
             'assets' => 
             array (
               0 => 
@@ -396,7 +396,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => $copies,
+            'copies' => 1,
             // 'attributes' => 
             // array (
             //     'color' => 'black',
@@ -423,7 +423,7 @@ function get_prodigi_quote() {
           0 => 
           array (
             'sku' => $prodigiSKU,
-            'copies' => $copies,
+            'copies' => 1,
             'assets' => 
             array (
               0 => 

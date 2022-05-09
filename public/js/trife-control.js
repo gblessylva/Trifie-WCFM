@@ -303,27 +303,33 @@
       }
       }
 
-    $('#prodigi_shipping_cart').change( function(){
-      $.ajax({
+   })( jQuery );
+
+
+var timeout;
+
+jQuery( function( $ ) {
+	$('.woocommerce').on('change', 'select#prodigi_shipping_cart', function(){
+		$.ajax({
         type: "post",
         url: "/wp-admin/admin-ajax.php",
         data: {
           action: 'get_prodigi_quote_price',
           shipping_price: this.value
         },
-        
-        success: function (response) {
-          $("[name='calc_shipping']" ).trigger( "click" );
-          
-          
-        }
-      });
-     
-    })
+        success: function(response){
+			if ( timeout !== undefined ) {
+				clearTimeout( timeout );
+			}
+			timeout = setTimeout(function() {
 
-
-   })( jQuery );
-
+			$("[name='calc_shipping']").trigger("click");
+		}, 500 ); // 1 second delay, half a second (500) seems comfortable too
+	
+		} 
+        });
+	});
+} );
 
 
    
@@ -356,5 +362,4 @@ variablePricingField.forEach((field)=>{
 
   })
   
-})
-
+});
