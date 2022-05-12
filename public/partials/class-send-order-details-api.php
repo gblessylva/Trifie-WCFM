@@ -39,14 +39,15 @@ function send_order_to_prodigi($order_id){
           $attribute = $metaData->get_data();
           $attribute_value = $attribute['value'];
           $attribute_key = $attribute['key'];
-          if($attribute_key == 'pa_color'){
-            $product_color = $attribute_value;
-          }
-          if($attribute_key == 'pa_size'){
-            $product_size = $attribute_value;
-          }
+			array_push($product_ui, $attribute_key);
+				if($attribute_key == 'color'){
+					$product_color = $attribute_value;
+				}
+			if($attribute_key == 'size'){
+				$product_size = $attribute_value;
+			}
+			
         }
-        // var_dump($product_color, $product_size);
 
         // Get the current Trifie Product
         $args = array(
@@ -173,7 +174,7 @@ function send_order_to_prodigi($order_id){
               'sizing' => 'fillPrintArea',
               'attributes' => 
               array (
-                'size' => $product_size,
+                'size' =>$product_size,
                 'color'=>$product_color,
               ),
               'assets' => 
