@@ -306,10 +306,13 @@
    })( jQuery );
 
 
+
+  //  Calculate Shipping method
 var timeout;
 
 jQuery( function( $ ) {
 	$('.woocommerce').on('change', 'select#prodigi_shipping_cart', function(){
+    console.log(this.value);
 		$.ajax({
         type: "post",
         url: "/wp-admin/admin-ajax.php",

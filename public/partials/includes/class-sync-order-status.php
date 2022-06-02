@@ -3,6 +3,7 @@
 
 add_action( 'woocommerce_thankyou', 'is_user_mailed', 20, 1);
 function is_user_mailed( $order_id ){
+    
   $order = wc_get_order($order_id);
   $order->update_meta_data('user_mailed', true);
   $order->save();
@@ -11,6 +12,8 @@ function is_user_mailed( $order_id ){
 add_action( 'woocommerce_email_order_meta', 'add_prodigi_product_meta', 10, 3 );
 function add_prodigi_product_meta( $order_obj, $sent_to_admin, $plain_text ){
 	$track_number = get_post_meta($order_obj->get_order_number(), '_prodigi_tracking_number', true);
+	$shipping_method = get_post_meta($order_obj->get_order_number(), '_prodigi_shipping_method', true );
+	
    	$track_url = get_post_meta($order_obj->get_order_number(), '_prodigi_tracking_url', true);
 	if($track_number){
        if ( $plain_text === false ) {
@@ -19,6 +22,7 @@ function add_prodigi_product_meta( $order_obj, $sent_to_admin, $plain_text ){
                 <ul>
                 <li style="list-style:none"><strong>Tracking Number:</strong> ' . $track_number . '</li>
                 <li style="list-style:none"><strong>Tracking URL:</strong> ' . $track_url . '</li>
+				 <li style="list-style:none"><strong>Shipping Method:</strong> ' . $shipping_method . '</li>
                 </ul>';
             
          } else {
@@ -151,13 +155,4 @@ if (strpos($_SERVER['REQUEST_URI'], "orderslist") !== false) {
 
 }
 // end of if statement
-
-
-
-    
-
-  
-
-
-
 

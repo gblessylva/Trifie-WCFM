@@ -62,6 +62,7 @@ class Trife_Public {
 		require plugin_dir_path( __FILE__ ) . 'partials/includes/class-sync-order-status.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/includes/class-get-prodigi-quote.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/class-create-custom-email-template.php';
+		require_once plugin_dir_path( __FILE__ ) . 'partials/includes/class-include-vendor-info-on-orders.php';
 
 
 		$this->plugin_name = $plugin_name;

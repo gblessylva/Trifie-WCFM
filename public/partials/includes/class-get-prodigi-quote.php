@@ -1,15 +1,17 @@
 <?php
-add_filter('woocommerce_billing_fields', 'custom_woocommerce_billing_fields');
+add_filter('woocommerce_before_checkout_billing_form', 'woo_billing_field');
 add_action('woocommerce_before_shipping_calculator', 'prodigi_shipping_cart');
 
 function prodigi_shipping_cart(){
+  $customer = WC()->session->get('customer');
+   var_dump($customer['shipping_country']);
     echo ' <p class="shipping-error"></p>';
     woocommerce_form_field('prodigi_shipping_cart', array(
         'type' => 'select',
         'options' => array(
-            'budget' => 'Budget',
-            'standard' => 'Standard',
-            'express' => 'Express',
+            'budget' => 'Budget (No Tracking number)',
+            'standard' => 'Standard (with tracking number)',
+            'express' => 'Express (tracking number + express delivery)',
         ),
         'label' => __('Select Shipping Method'),
         'required' => true,
@@ -18,28 +20,58 @@ function prodigi_shipping_cart(){
     ),  WC()->session->get('shipping_price'));
 }
 
-
-function custom_woocommerce_billing_fields($fields)
-{
-
-    $fields['prodigi_shipping'] = array(
-        'label' => __('Shipping Method', 'woocommerce'), // Add custom field label
-        'required' => true, // if field is required or not
-        'clear' => false, // add clear or not
-        'type' => 'select', // add field type
-        'options' => array(
-            'budget' => __('Budget', 'woocommerce'),
-            'standard' => __('Standard', 'woocommerce'),
-            'express' => __('Express', 'woocommerce'),
-        ),
-        'class' => array('custom-shipping'),    // add class name
-        'default' => 'budget', // set default value
-        
-    );
-
-
-    return $fields;
+function woo_billing_field(){
+  // var_dump(WC()->cart->show_shipping());
+   echo ' <p class="shipping-error"></p>';
+   woocommerce_form_field('prodigi_shipping', array(
+       'type' => 'select',
+       'options' => array(
+           'budget' => 'Budget (No Tracking number)',
+           'standard' => 'Standard (with tracking number)',
+           'express' => 'Express (tracking number + express delivery)',
+       ),
+       'class' => array('custom-shipping', 'form-row-wide'),
+       'label' => __('Shipping Method', 'woocommerce'),
+       'required' => true,
+       'label_class' => array('form-row-wide'),
+   ),  WC()->session->get('shipping_price'));
 }
+
+
+// function custom_woocommerce_billing_fields($fields)
+// {
+//   var_dump(WC()->session->get('shipping_price'));
+
+//     $fields['prodigi_shipping'] = array(
+//         'label' => __('Shipping Method', 'woocommerce'), // Add custom field label
+//         'required' => true, // if field is required or not
+//         'clear' => false, // add clear or not
+//         'type' => 'select', // add field type
+//         'options' => array(
+//             'budget' => __('Budget', 'woocommerce'),
+//             'standard' => __('Standard', 'woocommerce'),
+//             'express' => __('Express', 'woocommerce'),
+//         ),
+//         'class' => array('custom-shipping'),    // add class name
+        
+        
+//     );
+
+
+//     return $fields;
+// }
+
+// add_filter( 'default_checkout_billing_country', 'change_default_checkout_country', 10, 1 );
+
+// function change_default_checkout_country( $country ) {
+//     // If the user already exists, don't override country
+//     // if ( WC()->customer->get_is_paying_customer() ) {
+//       // $customer = WC()->session->get('customer');
+//       // var_dump($customer['shipping_country']);
+//         // return $customer['shipping_country'];
+//         return 'US';
+
+// }
 
 
 add_filter( 'woocommerce_checkout_fields', 'prodigi_email_reorder' );
