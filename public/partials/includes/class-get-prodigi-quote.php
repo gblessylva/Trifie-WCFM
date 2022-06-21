@@ -1,10 +1,13 @@
 <?php
+
+wp_enqueue_script(  'jquery' );
+
 add_filter('woocommerce_before_checkout_billing_form', 'woo_billing_field');
 add_action('woocommerce_before_shipping_calculator', 'prodigi_shipping_cart');
 
 function prodigi_shipping_cart(){
   $customer = WC()->session->get('customer');
-   var_dump($customer['shipping_country']);
+  //  var_dump($customer['shipping_country']);
     echo ' <p class="shipping-error"></p>';
     woocommerce_form_field('prodigi_shipping_cart', array(
         'type' => 'select',
@@ -74,7 +77,7 @@ function woo_billing_field(){
 // }
 
 
-add_filter( 'woocommerce_checkout_fields', 'prodigi_email_reorder' );
+// add_filter( 'woocommerce_checkout_fields', 'prodigi_email_reorder' );
 
 function prodigi_email_reorder( $checkout_fields ) {
 	$checkout_fields['billing']['prodigi_shipping']['priority'] = 4;
@@ -510,10 +513,13 @@ function get_prodigi_quote() {
         $response_body = json_decode( $response_body, true );
 		if($response_body['outcome']=='NotAvailable'){
 
+      $shippingCost = array( $response_body, $api_key);
+      // var_dump($shippingCost);
+
       echo __('<div class="alert alert-danger" role="alert"> <p> Sorry, this product is not available in your country </p>. </div>', 'trifie');
 			// echo '<p style="color:red; text-align:center;">Product Not Available in your country</p>';
 		}else{
-      
+        // $shippingCost = array( $response_body, $api_key);
 			 $shippingCost = intval($response_body['quotes'][0]['costSummary']['shipping']['amount']);
 		}
        
@@ -564,15 +570,16 @@ function custom_fee_based_on_cart_total( $cart ) {
 
 
 
-function disable_shipping_calc_on_cart( $show_shipping ) {
-    if( is_cart() ) {
-        return false;
-    }else {
-        return false;
-    }
-    return $show_shipping;
-}
-add_filter( 'woocommerce_cart_ready_to_calc_shipping', 'disable_shipping_calc_on_cart', 99 );
+// function disable_shipping_calc_on_cart( $show_shipping ) {
+//     if( is_cart() ) {
+//         return false;
+//     }
+//     else {
+//         return false;
+//     }
+//     return $show_shipping;
+// }
+// add_filter( 'woocommerce_cart_ready_to_calc_shipping', 'disable_shipping_calc_on_cart', 99 );
 
 
 add_action('woocommerce_checkout_create_order', 'update_custom_order_fields', 20, 2);

@@ -162,6 +162,12 @@ jQuery(document).ready(function($){
         })
       
 
+        // Add select 2 to field
+        $('#_printable_sku_field').select2();
+        $('#printable_sku').select2();
+
+
+
     })
 
 

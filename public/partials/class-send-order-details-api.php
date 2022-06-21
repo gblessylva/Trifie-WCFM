@@ -6,7 +6,7 @@ add_filter( 'wcfm_products_additonal_data_hidden', '__return_false' );
 add_action('woocommerce_thankyou', 'send_order_to_prodigi');
 add_filter( 'woocommerce_default_address_fields', 'required_postcode_fields' );
 
-function required_postcode_fields( $address_fields ) {git
+function required_postcode_fields( $address_fields ) {
     $address_fields['postcode']['required'] = true;
     return $address_fields;
 }
@@ -24,11 +24,12 @@ function send_order_to_prodigi($order_id){
     $country = $order->shipping_country;
     $shipping_state = WC()->countries->get_states( $country )[$state];
     $fullname = $order->billing_first_name ." ". $order->billing_last_name;
+    $shipping_full_name = $order->shipping_first_name ." ". $order->shipping_last_name;
     $copies = $order->get_item_count();
     $shipping_method = WC()->session->get('shipping_price');
     $product_color = 'white';
     $product_size = 'm';
-    // var_dump($shipping_method);
+    var_dump($shipping_method);
 
     foreach ($order->get_items() as $item) {
         $product = wc_get_product($item->get_product_id());
@@ -105,13 +106,13 @@ function send_order_to_prodigi($order_id){
               'address' => 
               array ( 
                 'line1' => $shipping,
-                'line2' => $shipping_address_2,
+                'line2' => $shipping_address_2 ? $shipping_address_2 : $shipping,
                 'postalOrZipCode' => $postcode ?$postcode: '09029',
                 'countryCode' => $country,
                 'townOrCity' =>$city,
                 'stateOrCounty' => $shipping_state,
               ),
-              'name' => $fullname,
+              'name' => $shipping_full_name ? $shipping_full_name : $fullname,
             ),
             'items' => 
             array (
@@ -160,13 +161,13 @@ function send_order_to_prodigi($order_id){
             'address' => 
             array (
               'line1' => $shipping,
-              'line2' => $shipping_address_2,
+              'line2' => $shipping_address_2 ? $shipping_address_2 : $shipping,
               'postalOrZipCode' => $postcode ?$postcode: '09029',
               'countryCode' => $country,
               'townOrCity' =>$city,
               'stateOrCounty' => $shipping_state,
             ),
-            'name' => $fullname,
+            'name' => $shipping_full_name ? $shipping_full_name : $fullname,
           ),
           'items' => 
           array (
@@ -215,13 +216,13 @@ function send_order_to_prodigi($order_id){
             'address' => 
             array (
               'line1' => $shipping,
-              'line2' => $shipping_address_2,
+              'line2' => $shipping_address_2 ? $shipping_address_2 : $shipping,
               'postalOrZipCode' => $postcode ?$postcode: '09029',
               'countryCode' => $country,
               'townOrCity' =>$city,
               'stateOrCounty' => $shipping_state,
             ),
-            'name' => $fullname,
+            'name' => $shipping_full_name ? $shipping_full_name : $fullname,
           ),
           'items' => 
           array (
@@ -264,13 +265,13 @@ function send_order_to_prodigi($order_id){
           'address' => 
           array (
             'line1' => $shipping,
-            'line2' => $shipping_address_2,
+            'line2' => $shipping_address_2 ? $shipping_address_2 : $shipping,
             'postalOrZipCode' => $postcode ?$postcode: '09029',
             'countryCode' => $country,
             'townOrCity' =>$city,
             'stateOrCounty' => $shipping_state,
           ),
-          'name' => $fullname,
+          'name' => $shipping_full_name ? $shipping_full_name : $fullname,
         ),
         'items' => 
         array (
@@ -318,13 +319,13 @@ $generic= json_encode(
         'address' => 
         array (
           'line1' => $shipping,
-          'line2' => $shipping_address_2,
+          'line2' => $shipping_address_2 ? $shipping_address_2 : $shipping,
           'postalOrZipCode' => $postcode ?$postcode: '09029',
           'countryCode' => $country,
           'townOrCity' =>$city,
           'stateOrCounty' => $shipping_state,
         ),
-        'name' => $fullname,
+        'name' => $shipping_full_name ? $shipping_full_name : $fullname,
       ),
       'items' => 
       array (
@@ -430,15 +431,16 @@ $response = wp_remote_request( $url.'Orders/', $framed_args );
 
       
     $response_body = wp_remote_retrieve_body( $response ); 
-    // var_dump($response['body']);
+    var_dump($response['body']);
     // var_dump ($trifie_cat_slug);
 
     if($response['response']['code'] != 200){
-      $order->update_meta_data( '_prodigi_shipping_method',   $shipping_method );
-      $order->save();
+      
       echo'
       <h2 style="color:red; font-size:20px">Error '.$response['response']['code'].'! Sorry, we could not send your order to Prodigi for printing. Please contact site admin</h2>';
     }else{
+      $order->update_meta_data( '_prodigi_shipping_method',   $shipping_method );
+      $order->save();
       echo _e( '<h2 style="color:green; font-size:20px"> Your order has been sent to Prodigi for printing. </h2>', 'trifie');
 
     }

@@ -84,6 +84,7 @@
         })
     })
 
+   
     // Compare Admin Price
     $(document).ready(function(){
 
@@ -251,7 +252,7 @@
       // Update cart price
 
       $("#prodigi_shipping").change(function() {
-        console.log(this.value);
+        // console.log(this.value, 'iii');
       $.ajax({
         url: '/wp-admin/admin-ajax.php',
         type: 'POST',
@@ -267,6 +268,7 @@
       })
       
        $('body').on('updated_checkout', function(data){  
+        console.log(data)
        var rtfee = $('.fee .woocommerce-Price-amount bdi').text();
        var rtfee = rtfee.replace(/[^0-9\.]+/g,"");
        var rtfee = parseFloat(rtfee);
@@ -312,7 +314,7 @@ var timeout;
 
 jQuery( function( $ ) {
 	$('.woocommerce').on('change', 'select#prodigi_shipping_cart', function(){
-    console.log(this.value);
+    // console.log(this.value);
 		$.ajax({
         type: "post",
         url: "/wp-admin/admin-ajax.php",
@@ -321,11 +323,12 @@ jQuery( function( $ ) {
           shipping_price: this.value
         },
         success: function(response){
+          console.log(response, 'response is');
 			if ( timeout !== undefined ) {
 				clearTimeout( timeout );
 			}
 			timeout = setTimeout(function() {
-
+        
 			$("[name='calc_shipping']").trigger("click");
 		}, 500 ); // 1 second delay, half a second (500) seems comfortable too
 	
@@ -366,3 +369,7 @@ variablePricingField.forEach((field)=>{
   })
   
 });
+
+
+
+

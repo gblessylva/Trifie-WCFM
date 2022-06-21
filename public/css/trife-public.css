@@ -2,6 +2,10 @@
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
+
+.woocommerce-shipping-methods {
+    display: none !important;
+}
 .high-res-image{
     max-width: 200px;
     border: 1px solid #d3d3d3;
