@@ -508,12 +508,12 @@ function get_prodigi_quote() {
             // end of body
         );
         // echo $api_key;
-        $response = wp_remote_post( 'https://api.sandbox.prodigi.com/v4.0/quotes', $quote_content );
+        $response = wp_remote_post( $url.'/quotes', $quote_content );
         $response_body = wp_remote_retrieve_body( $response );
         $response_body = json_decode( $response_body, true );
 		if($response_body['outcome']=='NotAvailable'){
 
-      $shippingCost = array( $response_body, $api_key);
+      // $shippingCost = array( $response_body, $api_key);
       // var_dump($shippingCost);
 
       echo __('<div class="alert alert-danger" role="alert"> <p> Sorry, this product is not available in your country </p>. </div>', 'trifie');

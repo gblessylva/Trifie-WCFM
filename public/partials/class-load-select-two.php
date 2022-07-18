@@ -35,4 +35,4 @@ function change_default_checkout_city(){
     // Get the shipping city
   $shipping_city = WC()->customer->get_shipping_city();
   return $shipping_city; // city
-}
+} 

@@ -25,7 +25,7 @@ function send_order_to_prodigi($order_id){
     $shipping_state = WC()->countries->get_states( $country )[$state];
     $fullname = $order->billing_first_name ." ". $order->billing_last_name;
     $shipping_full_name = $order->shipping_first_name ." ". $order->shipping_last_name;
-    $copies = $order->get_item_count();
+    $copies = '';
     $shipping_method = WC()->session->get('shipping_price');
     $product_color = 'white';
     $product_size = 'm';
@@ -34,7 +34,6 @@ function send_order_to_prodigi($order_id){
     $live_url = wcfm_get_option('wcfm_prodigy_live_api_url', '');
     $live_api_key = wcfm_get_option('wcfm_prodigy_live_api_key', '');
     $test_api_key_vendor =wcfm_get_option('wcfm_prodigy_test_api_key', '');
-    $trifie_cat_slug = array();
     $items = array();
     // $test_api_key = 'test_1ecc20d0-b515-456e-8583-79e0b320ebf2';
 
@@ -54,64 +53,17 @@ function send_order_to_prodigi($order_id){
 
     foreach ($order->get_items() as $item) {
         // Loop through each product in cart
-        $product_id = $item->get_product_id();
         $product = wc_get_product($item->get_product_id());
         $attributes = $product->get_attributes();
         $item_sku = $product->get_sku();
         $prodigiSKU = get_post_meta($product_id, '_printable_sku', true);
         $product_name = $item['name'];
+        $product_id = $item->get_product_id();
         $printable_image_url = get_post_meta($product_id, '_printable_image', true);
-        
-        // Get the current Trifie Product
-        $args = array(
-          'post_type' => 'trifie_sku',
-          'meta_query' => array(
-              'relation' => 'AND',
-              array(
-                  'key' => 'prodigi_trifie_sku',
-                  'value' =>$prodigiSKU,
-                  // 'compare' => '=',
-              ),
-          ), 
-      );
-      
-      $the_query = get_posts($args);
-      $pro_ID =$the_query[0]->ID;
-      $trifie_category = get_the_terms( $pro_ID, 'trifie_sku_category' );
-      // $trifie_slug = $trifie_category[0]->slug;
-      $slugs = $trifie_category[0]->slug;
-      
+        $copies = $item['qty'];
 
-      // Push the Trifie Category to an array
-      // array_push($trifie_cat_slug, $trifie_category[0]->slug);
-     
-      // $trife_product_id = get_post_meta($pro_ID, 'trifie_product_id', true);
-      // var_dump($trife_product_id);
-
-        foreach ($item->get_meta_data() as $metaData) {
-          $attribute = $metaData->get_data();
-          $attribute_value = $attribute['value'];
-          $attribute_key = $attribute['key'];
-          // array_push($product_ui, $attribute_key);
-          if($attribute_key == 'color'){
-            $product_color = $attribute_value;
-          }//end if
-          if($attribute_key == 'size'){
-            $product_size = $attribute_value;
-          }//end if
-
-        }//end Meta foreach
-
-        // var_dump($trifie_cat_slug);
-        // Push Category to a unique array
-        
-        var_dump($slugs);
-
-
-
-
-        $items_generic = array(
-            'merchantReference' => $item_sku. '-'. $product_name . '-'. $trifie_cat_slug,
+        $items[] = array(
+            'merchantReference' => $item_sku. '-'. $product_name,
             'sku' => $prodigiSKU,
             'copies'=> $copies,
             'sizing' => 'fillPrintArea',
@@ -131,121 +83,48 @@ function send_order_to_prodigi($order_id){
             ),
 
         );
-        $items_framed = array(
-          'merchantReference' => $item_sku. '-'. $product_name,
-          'sku' => $prodigiSKU,
-          'copies'=> $copies,
-          'sizing' => 'fillPrintArea',
-          'attributes' => 
-          array (
-            'wrap' => 'white',
-            'color'=>$product_color,
-          ),
-          'assets' => 
-          array (
-            0 => 
-            array (
-              'printArea' => 'Default',
-              'url' => $printable_image_url,
-              'md5Hash' => 'dcb2b27755a6f2ceb09089856508f31b',
-            ),
-          ),
-        );
-        $items_postcard = array(
-          'merchantReference' => $item_sku. '-'. $product_name,
-          'sku' => $prodigiSKU ? '': $item_sku,
-          'copies'=> $copies,
-          'sizing' => 'fillPrintArea',
-          'assets' => 
-          array (
-            0 => 
-            array (
-              'url' => $printable_image_url,
-              'md5Hash' => 'dcb2b27755a6f2ceb09089856508f31b',
-            ),
-          ),
-        );
-        $items_apparel = array(
-          'merchantReference' => $item_sku. '-'. $product_name ,
-          'sku' => $prodigiSKU,
-          'copies'=> $copies,
-          'sizing' => 'fillPrintArea',
-          'attributes' => 
-            array (
-              'size' =>$product_size ? $product_size : 'm',
-              'color'=>$product_color ? $product_color : 'black',
     
-            ),
-          'assets' => 
-          array (
-            0 => 
-            array (
-              'printArea'=>'default',
-              'url' => $printable_image_url,
-              'md5Hash' => 'dcb2b27755a6f2ceb09089856508f31b',
-            ),
-          ),
-        );
-        $items_patch_round = array(
-          'merchantReference' => $item_sku. '-'. $product_name,
-          'sku' => $prodigiSKU,
-          'copies'=> $copies,
-          'sizing' => 'fillPrintArea',
-          'attributes' => 
-          array (
-            'size' =>$product_size,
-            'color'=>$product_color,
-          ),
-          'assets' => 
-          array (
-            0 => 
-            array (
-              'printArea' => 'Default',
-              'url' => $printable_image_url,
-              'md5Hash' => 'dcb2b27755a6f2ceb09089856508f31b',
-            ),
-          ),
-        );
-        $items_prints = array(
-          'merchantReference' => $item_sku. '-'. $product_name,
-          'sku' => $prodigiSKU,
-          'copies'=> $copies,
-          'sizing' => 'fillPrintArea',
-          // 'attributes' =>
-          // array (
-          //   'size' =>$product_size,
-          //   'color'=>$product_color,
-          // ),
-          'assets' => 
-          array (
-            0 => 
-            array (
-              'printArea' => 'Default',
-              'url' => $printable_image_url,
-              'md5Hash' => 'dcb2b27755a6f2ceb09089856508f31b',
-            ),
-          ),
-        );
 
-        if($slugs == 'generic'){
-          array_push($items, $items_generic);
-        }elseif($slugs == 'framed'){
-          array_push($items, $items_framed);
-        }elseif($slugs == 'postcard'){
-          array_push($items, $items_postcard);
-        }elseif($slugs == 'apparel'){
-          array_push($items, $items_apparel);
-        }elseif($slugs == 'patch-round'){
-          array_push($items, $items_patch_round);
-        }elseif($slugs == 'prints'){
-          array_push($items, $items_prints);
-        }//end if
+        foreach ($item->get_meta_data() as $metaData) {
+          $attribute = $metaData->get_data();
+          $attribute_value = $attribute['value'];
+          $attribute_key = $attribute['key'];
+          // array_push($product_ui, $attribute_key);
+          if($attribute_key == 'color'){
+            $product_color = $attribute_value;
+          }//end if
+          if($attribute_key == 'size'){
+            $product_size = $attribute_value;
+          }//end if
+        }//end foreach
+
+
 
 // end of foreach
 
+        // Get the current Trifie Product
+        $args = array(
+          'post_type' => 'trifie_sku',
+          'meta_query' => array(
+              'relation' => 'AND',
+              array(
+                  'key' => 'prodigi_trifie_sku',
+                  'value' =>$prodigiSKU,
+                  // 'compare' => '=',
+              ),
+          ), 
+      );
+      
+      $the_query = get_posts($args);
+      $pro_ID =$the_query[0]->ID;
+      $trifie_category = get_the_terms( $pro_ID, 'trifie_sku_category' );
+      $trifie_cat_slug = $trifie_category[0]->slug;
+      // var_dump($trifie_cat_slug);
+      // $trife_product_id = get_post_meta($pro_ID, 'trifie_product_id', true);
+      // var_dump($trife_product_id);
+
       }
 
-  
       
   
 
@@ -299,7 +178,30 @@ function send_order_to_prodigi($order_id){
             ),
             'name' => $shipping_full_name ? $shipping_full_name : $fullname,
           ),
-           'items' => $items,
+          'items' => 
+          array (
+            0 => 
+            array (
+              'merchantReference' => $item_sku. '-'. $product_name,
+              'sku' => $prodigiSKU,
+              'copies' => $copies,
+              'sizing' => 'fillPrintArea',
+              'attributes' => 
+              array (
+                'size' =>$product_size,
+                'color'=>$product_color,
+              ),
+              'assets' => 
+              array (
+                0 => 
+                array (
+                  'printArea' => 'Default',
+                  'url' => $printable_image_url,
+                  'md5Hash' => 'dcb2b27755a6f2ceb09089856508f31b',
+                ),
+              ),
+            ),
+          ),
           'metadata' => 
           array (
             'mycustomkey' => 'some-guid',
@@ -331,7 +233,25 @@ function send_order_to_prodigi($order_id){
             ),
             'name' => $shipping_full_name ? $shipping_full_name : $fullname,
           ),
-          'items' => $items,
+          'items' => 
+          array (
+            0 => 
+            array (
+              'merchantReference' => $item_sku. '-'. $product_name,
+              'sku' => $prodigiSKU,
+              'copies' => $copies,
+              'sizing' => 'fillPrintArea',
+              'assets' => 
+              array (
+                0 => 
+                array (
+                  'printArea' => 'Default',
+                  'url' => $printable_image_url,
+                  'md5Hash' => 'dcb2b27755a6f2ceb09089856508f31b',
+                ),
+              ),
+            ),
+          ),
           'metadata' => 
           array (
             'mycustomkey' => 'some-guid',
@@ -362,7 +282,30 @@ function send_order_to_prodigi($order_id){
           ),
           'name' => $shipping_full_name ? $shipping_full_name : $fullname,
         ),
-        'items' => $items,
+        'items' => 
+        array (
+          0 => 
+          array (
+            'merchantReference' => $item_sku. '-'. $product_name,
+            'sku' => $prodigiSKU,
+            'copies' => $copies,
+            'sizing' => 'fillPrintArea',
+            'attributes' => 
+            array (
+              'size' => $product_size,
+              'color'=>$product_color,
+            ),
+            'assets' => 
+            array (
+              0 => 
+              array (
+                'printArea' => 'Default',
+                'url' => $printable_image_url,
+                'md5Hash' => 'dcb2b27755a6f2ceb09089856508f31b',
+              ),
+            ),
+          ),
+        ),
         'metadata' => 
         array (
           'mycustomkey' => 'some-guid',
@@ -374,38 +317,6 @@ function send_order_to_prodigi($order_id){
           'sourceId' => 12345,
         ),
       )
-);
-
-// For Prints Category
-$prints = json_encode(
-  array (
-      'merchantReference' => $order_id,
-      'shippingMethod' => $shipping_method ? $shipping_method : 'budget',
-      'recipient' => 
-      array (
-        'address' => 
-        array (
-          'line1' => $shipping,
-          'line2' => $shipping_address_2 ? $shipping_address_2 : $shipping,
-          'postalOrZipCode' => $postcode ?$postcode: '09029',
-          'countryCode' => $country,
-          'townOrCity' =>$city,
-          'stateOrCounty' => $shipping_state,
-        ),
-        'name' => $shipping_full_name ? $shipping_full_name : $fullname,
-      ),
-      'items' => $items,
-      'metadata' => 
-      array (
-        'mycustomkey' => 'some-guid',
-        'someCustomerPreference' => 
-        array (
-          'preference1' => 'something',
-          'preference2' => 'red',
-        ),
-        'sourceId' => 12345,
-      ),
-    )
 );
 
 $generic= json_encode(
@@ -425,7 +336,25 @@ $generic= json_encode(
         ),
         'name' => $shipping_full_name ? $shipping_full_name : $fullname,
       ),
-      'items' => $items,
+      'items' => 
+      array (
+        0 => 
+        array (
+          'merchantReference' => $item_sku. '-'. $product_name,
+          'sku' => $prodigiSKU,
+          'copies' => $copies,
+          'sizing' => 'fillPrintArea',
+          'assets' => 
+          array (
+            0 => 
+            array (
+              'printArea' => 'Default',
+              'url' => $printable_image_url,
+              'md5Hash' => 'dcb2b27755a6f2ceb09089856508f31b',
+            ),
+          ),
+        ),
+      ),
       'metadata' => 
       array (
         'mycustomkey' => 'some-guid',
@@ -493,19 +422,26 @@ $generig_args= array(
   'body' => $generic
 );
 
-$print_args= array(
-  'method' => 'POST',
-  'headers' => array(
-      'X-API-Key' => $api_key,
-      'Content-type' => 'application/json',
-      'Accept' => 'application/json; charset=utf-8',
-  ),
-  'body' => $prints
-);
+$response = wp_remote_request( $url.'Orders/', $framed_args );
+    
+    if($trifie_cat_slug == 'postcard'){
+      $response = wp_remote_request( $url.'Orders/', $postcard_args );
+    }elseif ($trifie_cat_slug == 'framed-canvas') {
+      $response = wp_remote_request( $url.'Orders/', $framed_args );
+    }elseif($trifie_cat_slug=='apparel'){
+      $response = wp_remote_request( $url.'Orders/', $apparel_args );
+    }elseif($trifie_cat_slug=='patch-round'){
+      $response = wp_remote_request( $url.'Orders/', $patch_round_args );
+    }elseif ($trifie_cat_slug == 'framed') {
+      $response = wp_remote_request( $url.'Orders/', $framed_args );
+    }else{
+      $response = wp_remote_request( $url.'Orders/', $generig_args );
+    }
 
-
-$response = wp_remote_request( $url.'Orders/', $generig_args);  
-var_dump($response['body']);
+      
+    $response_body = wp_remote_retrieve_body( $response ); 
+    // var_dump($response['body']);
+    var_dump ($items);
 
     if($response['response']['code'] != 200){
       
@@ -517,9 +453,6 @@ var_dump($response['body']);
       echo _e( '<h2 style="color:green; font-size:20px"> Your order has been sent to Prodigi for printing. </h2>', 'trifie');
 
     }
-// }
-
-
     // $bd = json_decode($response_body, true);
     // var_dump($bd['order']['shipments']);
  
