@@ -156,3 +156,7 @@ select#prodigi_shipping_cart.select{
     justify-content: center;
     padding-top: 30px;
 }
+
+form.woocommerce-shipping-calculator{
+    /* display: none !important; */
+}

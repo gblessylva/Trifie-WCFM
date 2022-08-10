@@ -5,11 +5,24 @@ apply_filters( 'wcfm_products_additional_info_column_label', __( 'Additional Inf
 add_filter( 'wcfm_products_additonal_data_hidden', '__return_false' );
 add_action('woocommerce_thankyou', 'send_order_to_prodigi');
 add_filter( 'woocommerce_default_address_fields', 'required_postcode_fields' );
+// add_filter( 'woocommerce_checkout_fields' , 'custom_override_checkout_fields' );
 
+// Remove the default post code field on cart page
 function required_postcode_fields( $address_fields ) {
-    $address_fields['postcode']['required'] = true;
+    unset( $address_fields['postcode'] );
     return $address_fields;
 }
+
+add_filter('woocommerce_shipping_calculator_enable_postcode', '__return_false' );
+
+
+// add_action( 'woocommerce_checkout_process', 'my_custom_checkout_field_process' );
+
+
+// function required_postcode_fields( $address_fields ) {
+//     $address_fields['postcode']['required'] = true;
+//     return $address_fields;
+// }
 
 // Send Order to Prodigy 
 
@@ -25,7 +38,7 @@ function send_order_to_prodigi($order_id){
     $shipping_state = WC()->countries->get_states( $country )[$state];
     $fullname = $order->billing_first_name ." ". $order->billing_last_name;
     $shipping_full_name = $order->shipping_first_name ." ". $order->shipping_last_name;
-    $copies = $order->get_item_count();
+    $copies ;
     $shipping_method = WC()->session->get('shipping_price');
     $product_color = 'white';
     $product_size = 'm';
@@ -61,6 +74,7 @@ function send_order_to_prodigi($order_id){
         $prodigiSKU = get_post_meta($product_id, '_printable_sku', true);
         $product_name = $item['name'];
         $printable_image_url = get_post_meta($product_id, '_printable_image', true);
+        $copies = $item['quantity'];
         
         // Get the current Trifie Product
         $args = array(
@@ -115,11 +129,6 @@ function send_order_to_prodigi($order_id){
             'sku' => $prodigiSKU,
             'copies'=> $copies,
             'sizing' => 'fillPrintArea',
-            'attributes' => 
-            array (
-              'size' =>$product_size,
-              'color'=>$product_color,
-            ),
             'assets' => 
             array (
               0 => 
@@ -138,7 +147,6 @@ function send_order_to_prodigi($order_id){
           'sizing' => 'fillPrintArea',
           'attributes' => 
           array (
-            'wrap' => 'white',
             'color'=>$product_color,
           ),
           'assets' => 
@@ -191,11 +199,6 @@ function send_order_to_prodigi($order_id){
           'sku' => $prodigiSKU,
           'copies'=> $copies,
           'sizing' => 'fillPrintArea',
-          'attributes' => 
-          array (
-            'size' =>$product_size,
-            'color'=>$product_color,
-          ),
           'assets' => 
           array (
             0 => 
@@ -211,11 +214,6 @@ function send_order_to_prodigi($order_id){
           'sku' => $prodigiSKU,
           'copies'=> $copies,
           'sizing' => 'fillPrintArea',
-          // 'attributes' =>
-          // array (
-          //   'size' =>$product_size,
-          //   'color'=>$product_color,
-          // ),
           'assets' => 
           array (
             0 => 
@@ -227,9 +225,7 @@ function send_order_to_prodigi($order_id){
           ),
         );
 
-        if($slugs == 'generic'){
-          array_push($items, $items_generic);
-        }elseif($slugs == 'framed'){
+       if($slugs == 'framed'){
           array_push($items, $items_framed);
         }elseif($slugs == 'postcard'){
           array_push($items, $items_postcard);
@@ -239,7 +235,10 @@ function send_order_to_prodigi($order_id){
           array_push($items, $items_patch_round);
         }elseif($slugs == 'prints'){
           array_push($items, $items_prints);
+        }else{
+          array_push($items, $items_generic);
         }//end if
+        
 
 // end of foreach
 
@@ -505,6 +504,7 @@ $print_args= array(
 
 
 $response = wp_remote_request( $url.'Orders/', $generig_args);  
+var_dump($copies);
 var_dump($response['body']);
 
     if($response['response']['code'] != 200){

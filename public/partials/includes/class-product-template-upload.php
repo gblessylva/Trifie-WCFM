@@ -68,11 +68,12 @@ if(isset($_POST['import-template'])){
       $short_description = trim( $row[1]);
       $long_description = trim($row[2]);
       $category = trim($row[3]);
-      $printable_sku = trim( $row[4]);
+      $printable_sku = trim( $row[4]);  
+	  $product_template = trim($row[5]);
       $sku = trim($row[5]);
-      $min_price = trim( $row [6]);
-      $price = trim($row[7]);
-      $product_template = trim($row[8]);
+      $min_price = trim( $row [7]);
+      $price = trim($row[6]);
+     
 	  $attributes = trim($row[9]);
       $slug = strtolower(str_replace(' ', '-', $product_name));
 	  $template_cat_slug = strtolower(str_replace(' ', '-', $category));

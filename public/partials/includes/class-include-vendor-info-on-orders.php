@@ -2,6 +2,7 @@
 // add_action( 'init', 'add_vendors_to_order', 10 );
 add_action( 'woocommerce_email_order_meta', 'add_vendors_to_order', 10, 3 );
 
+
 function add_vendors_to_order($order_obj, $sent_to_admin, $plain_text) {
     // global $WCFM, $WCFMmp, $post;
     $order_id = $order_obj->get_order_number() ;
