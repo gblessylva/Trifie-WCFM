@@ -4,7 +4,7 @@ apply_filters( 'wcfm_products_additonal_data', '–', $product_id );
 apply_filters( 'wcfm_products_additional_info_column_label', __( 'Additional Info', 'wc-frontend-manager' ) );
 add_filter( 'wcfm_products_additonal_data_hidden', '__return_false' );
 add_action('woocommerce_thankyou', 'send_order_to_prodigi');
-add_filter( 'woocommerce_default_address_fields', 'required_postcode_fields' );
+// add_filter( 'woocommerce_default_address_fields', 'required_postcode_fields' );
 // add_filter( 'woocommerce_checkout_fields' , 'custom_override_checkout_fields' );
 
 // Remove the default post code field on cart page
@@ -14,6 +14,8 @@ function required_postcode_fields( $address_fields ) {
 }
 
 add_filter('woocommerce_shipping_calculator_enable_postcode', '__return_false' );
+
+
 
 
 // add_action( 'woocommerce_checkout_process', 'my_custom_checkout_field_process' );
@@ -110,6 +112,9 @@ function send_order_to_prodigi($order_id){
           if($attribute_key == 'color'){
             $product_color = $attribute_value;
           }//end if
+          if($attribute_key == 'frame-color'){
+            $product_color = $attribute_value;
+          }
           if($attribute_key == 'size'){
             $product_size = $attribute_value;
           }//end if
@@ -119,7 +124,7 @@ function send_order_to_prodigi($order_id){
         // var_dump($trifie_cat_slug);
         // Push Category to a unique array
         
-        var_dump($slugs);
+        // var_dump($slugs);
 
 
 
@@ -173,6 +178,7 @@ function send_order_to_prodigi($order_id){
             ),
           ),
         );
+       
         $items_apparel = array(
           'merchantReference' => $item_sku. '-'. $product_name ,
           'sku' => $prodigiSKU,
@@ -194,6 +200,8 @@ function send_order_to_prodigi($order_id){
             ),
           ),
         );
+
+
         $items_patch_round = array(
           'merchantReference' => $item_sku. '-'. $product_name,
           'sku' => $prodigiSKU,
@@ -504,7 +512,7 @@ $print_args= array(
 
 
 $response = wp_remote_request( $url.'Orders/', $generig_args);  
-var_dump($copies);
+// var_dump($copies);
 var_dump($response['body']);
 
     if($response['response']['code'] != 200){
