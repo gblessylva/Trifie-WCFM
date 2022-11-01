@@ -36,3 +36,51 @@ function change_default_checkout_city(){
   $shipping_city = WC()->customer->get_shipping_city();
   return $shipping_city; // city
 } 
+
+class WooCommerce_Hide_Password_Protected_Products {
+
+	/**
+	 * The Constructor
+	 */
+	public function __construct() {
+		add_action( 'pre_get_posts', array( $this, 'alter_product_query' ), 11 );
+	}
+
+	/**
+	 * Alter the WooCommerce product query
+	 *
+	 * @param $q
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 */
+	public function alter_product_query( $q ) {
+
+		if ( ! is_admin() && ! is_single() && isset( $q->query ) && isset( $q->query['post_type'] ) && 'product' == $q->query['post_type'] ) {
+			add_filter( 'posts_where', array( $this, 'exclude_protected_products' ) );
+		}
+	}
+
+	/**
+	 * Prevent password protected products appearing in the loops
+	 *
+	 * @param  string $where
+	 *
+	 * @return string
+	 */
+	public function exclude_protected_products( $where ) {
+		global $wpdb;
+		$where .= " AND {$wpdb->posts}.post_password = ''";
+
+		return $where;
+	}
+}
+
+// Bootstrap function
+function __woocommerce_hide_password_protected_products_main() {
+	new  WooCommerce_Hide_Password_Protected_Products();
+}
+
+// Load on plugin_loaded
+add_action( 'plugins_loaded', '__woocommerce_hide_password_protected_products_main', 11 );

@@ -35,14 +35,35 @@ function add_prodigi_product_meta( $order_obj, $sent_to_admin, $plain_text ){
 
 if (strpos($_SERVER['REQUEST_URI'], "orderslist") !== false) {
     add_action('init', 'load_all_orders', 10);
-    function load_all_orders(){
-    add_filter('wp_mail_from', function($email){
+}
+
+ add_filter('wp_mail_from', function($email){
         return 'customer-support-6075@trifie.com';
     });
 
     add_filter('wp_mail_from_name', function($name){
         return 'Trife Support';
     });
+	
+// register_activation_hook(__FILE__, 'sync_prodigi_orders');
+ 
+// function sync_prodigi_orders() {
+//     if (! wp_next_scheduled ( 'sync_order_status' )) {
+//     wp_schedule_event(time(), 'hourly', 'sync_order_status');
+//     }
+// }
+ 
+
+
+add_action('sync_prodigi_orders', 'load_all_orders');
+ 
+// function load_all_orders() {
+//     // do something every hour
+// }
+
+
+    function load_all_orders(){
+   
     $query = new WC_Order_Query( array(
             'limit' => 10,
             'orderby' => 'date',
@@ -153,6 +174,19 @@ if (strpos($_SERVER['REQUEST_URI'], "orderslist") !== false) {
     }
     // End of load orders function 
 
-}
+// }
 // end of if statement
 
+ 
+// add_action( 'prodigi_order_syncing', 'load_all_orders' );
+ 
+// function schedule_my_cron() {
+//     if ( ! wp_next_scheduled('prodigi_order_syncing') ) {
+//         //condition to makes sure that the task is not re-created if it already exists
+//         wp_schedule_event( time(), 'hourly', 'prodigi_order_syncing' );
+//     }
+// }
+// add_action( 'init', 'schedule_my_cron' );
+
+
+ 

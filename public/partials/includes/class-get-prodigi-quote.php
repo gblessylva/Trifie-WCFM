@@ -202,6 +202,40 @@ function get_prodigi_quote() {
         ),
       ),
     );
+    $items_socks = array(
+      'sku' => $prodigiSKU,
+      'copies'=> 1,
+      'attributes' => 
+      array (
+        'size'=>$product_size ? $product_size : 'm',
+      ),
+      'assets' => 
+      array (
+        0 => 
+        array (
+          'printArea' => 'Default',
+         
+          
+        ),
+      ),
+    );
+    $items_photo_tiles = array(
+      'sku' => $prodigiSKU,
+      'copies'=> 1,
+      'attributes' => 
+      array (
+        'color'=>$product_color ? $product_color : 'black',
+      ),
+      'assets' => 
+      array (
+        0 => 
+        array (
+          'printArea' => 'Default',
+         
+          
+        ),
+      ),
+    );
     // Compare Category Slug and assign array
     if($current_trifie_category_slug == 'generic'){
       array_push($product_array, $items_generic);
@@ -217,7 +251,13 @@ function get_prodigi_quote() {
      array_push($product_array, $items_prints);
     }elseif($current_trifie_category_slug == 'framed-canvas'){
      array_push($product_array, $items_framed_canvas);
-    }else{
+   
+    }
+    elseif($current_trifie_category_slug == 'socks' ||$current_trifie_category_slug== 'GLOBAL-SOCKS'){
+      array_push($product_array, $items_socks);
+     }elseif($current_trifie_category_slug == 'photo-tiles'){
+      array_push($product_array, $items_photo_tiles);
+     }else{
       array_push($product_array, $items_generic);
 
     }
@@ -314,3 +354,11 @@ function get_prodigi_quote_price(){
 }
 
 // add_action('woocommerce_before_cart', 'get_prodigi_quote_price');
+
+add_filter( 'woocommerce_cart_shipping_method_full_label', 'bbloomer_remove_shipping_label', 9999, 2 );
+   
+function bbloomer_remove_shipping_label( $label, $method ) {
+    $new_label = preg_replace( '/^.+:/', '', $label );
+    return $new_label;
+}
+
