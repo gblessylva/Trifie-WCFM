@@ -28,6 +28,16 @@ add_filter('woocommerce_shipping_calculator_enable_postcode', '__return_false' )
 
 // Send Order to Prodigy 
 
+// $new_state = "";
+// function translate_string(){
+//   // global WC
+  
+//   $translated = WC()->countries->get_states( $country )[$state];
+//   echo $translated;
+// }
+
+// translate_string();
+
 function send_order_to_prodigi($order_id){
 
     $order = new WC_Order($order_id);
@@ -43,6 +53,7 @@ function send_order_to_prodigi($order_id){
     $copies ;
     $shipping_method = WC()->session->get('shipping_price');
     $product_color = 'white';
+    $product_wrap = '';
     $product_size = 'm';
     $allow_live_mode = wcfm_get_option('wcfm_prodigy_live_mode');
     $test_url = wcfm_get_option('wcfm_prodigy_test_api_url');
@@ -51,9 +62,13 @@ function send_order_to_prodigi($order_id){
     $test_api_key_vendor =wcfm_get_option('wcfm_prodigy_test_api_key', '');
     $trifie_cat_slug = array();
     $items = array();
+    $translated = WC()->countries->get_states( $country )[$state];
     // $test_api_key = 'test_1ecc20d0-b515-456e-8583-79e0b320ebf2';
 
-    // echo $test_url;
+    // echo $state, $shipping_state;
+    var_dump ($state);
+
+    
     $url = '';
     $api_key = '';
     if($allow_live_mode == 'yes'){
@@ -108,12 +123,16 @@ function send_order_to_prodigi($order_id){
           $attribute = $metaData->get_data();
           $attribute_value = $attribute['value'];
           $attribute_key = $attribute['key'];
+          var_dump($attribute_key);
           // array_push($product_ui, $attribute_key);
           if($attribute_key == 'color'){
             $product_color = $attribute_value;
           }//end if
           if($attribute_key == 'frame-color'){
             $product_color = $attribute_value;
+          }
+          if($attribute_key== 'wrap'){
+            $product_wrap = $attribute_value;
           }
           if($attribute_key == 'size'){
             $product_size = $attribute_value;
@@ -153,6 +172,27 @@ function send_order_to_prodigi($order_id){
           'attributes' => 
           array (
             'color'=>$product_color,
+            
+          ),
+          'assets' => 
+          array (
+            0 => 
+            array (
+              'printArea' => 'Default',
+              'url' => $printable_image_url,
+              'md5Hash' => 'dcb2b27755a6f2ceb09089856508f31b',
+            ),
+          ),
+        );
+        $items_framed_canvas = array(
+          'merchantReference' => $item_sku. '-'. $product_name,
+          'sku' => $prodigiSKU,
+          'copies'=> $copies,
+          'sizing' => 'fillPrintArea',
+          'attributes' => 
+          array (
+            'color'=>$product_color,
+            'wrap'=>$product_wrap ? $product_wrap: 'white'
           ),
           'assets' => 
           array (
@@ -201,6 +241,26 @@ function send_order_to_prodigi($order_id){
           ),
         );
 
+        $items_socks = array(
+          'merchantReference' => $item_sku. '-'. $product_name ,
+          'sku' => $prodigiSKU,
+          'copies'=> $copies,
+          'sizing' => 'fillPrintArea',
+          'attributes' => 
+            array (
+              'size' =>$product_size ? $product_size : 'm',
+    
+            ),
+          'assets' => 
+          array (
+            0 => 
+            array (
+              'printArea'=>'default',
+              'url' => $printable_image_url,
+              'md5Hash' => 'dcb2b27755a6f2ceb09089856508f31b',
+            ),
+          ),
+        );
 
         $items_patch_round = array(
           'merchantReference' => $item_sku. '-'. $product_name,
@@ -232,10 +292,34 @@ function send_order_to_prodigi($order_id){
             ),
           ),
         );
-
+        $items_photo_tiles=array(
+          'merchantReference' => $item_sku. '-'. $product_name ,
+          'sku' => $prodigiSKU,
+          'copies'=> $copies,
+          'sizing' => 'fillPrintArea',
+          'attributes' => 
+            array (
+              'color' =>$product_color ? $product_color : 'black',
+    
+            ),
+          'assets' => 
+          array (
+            0 => 
+            array (
+              'printArea'=>'default',
+              'url' => $printable_image_url,
+              'md5Hash' => 'dcb2b27755a6f2ceb09089856508f31b',
+            ),
+          ),
+        );
+        var_dump($slugs);
        if($slugs == 'framed'){
           array_push($items, $items_framed);
-        }elseif($slugs == 'postcard'){
+        
+        }elseif($slugs == 'framed-canvas'){
+          array_push($items, $items_framed_canvas);
+        }
+        elseif($slugs == 'postcard'){
           array_push($items, $items_postcard);
         }elseif($slugs == 'apparel'){
           array_push($items, $items_apparel);
@@ -243,6 +327,15 @@ function send_order_to_prodigi($order_id){
           array_push($items, $items_patch_round);
         }elseif($slugs == 'prints'){
           array_push($items, $items_prints);
+        }
+        elseif($slugs == 'socks'){
+          array_push($items, $items_socks);
+          
+
+        } elseif($slugs == 'photo-tiles'){
+          array_push($items, $items_photo_tiles);
+        
+
         }else{
           array_push($items, $items_generic);
         }//end if
