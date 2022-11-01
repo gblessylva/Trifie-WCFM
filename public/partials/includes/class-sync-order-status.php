@@ -151,9 +151,9 @@ if (strpos($_SERVER['REQUEST_URI'], "orderslist") !== false) {
     };
 
     
-    }
+   // }
     // End of load orders function 
 
-}
+//}
 // end of if statement
 
