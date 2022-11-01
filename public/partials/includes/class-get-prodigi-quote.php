@@ -4,7 +4,6 @@ wp_enqueue_script(  'jquery' );
 
 add_filter('woocommerce_before_checkout_billing_form', 'woo_billing_field');
 add_action('woocommerce_before_shipping_calculator', 'prodigi_shipping_cart');
-
 function prodigi_shipping_cart(){
   $customer = WC()->session->get('customer');
   //  var_dump($customer['shipping_country']);
@@ -43,6 +42,8 @@ function prodigi_email_reorder( $checkout_fields ) {
 	$checkout_fields['billing']['prodigi_shipping']['priority'] = 4;
 	return $checkout_fields;
 }
+
+
 
 
 add_action('wp_ajax_get_prodigi_quote', 'get_prodigi_quote');
@@ -251,13 +252,7 @@ function get_prodigi_quote() {
      array_push($product_array, $items_prints);
     }elseif($current_trifie_category_slug == 'framed-canvas'){
      array_push($product_array, $items_framed_canvas);
-   
-    }
-    elseif($current_trifie_category_slug == 'socks' ||$current_trifie_category_slug== 'GLOBAL-SOCKS'){
-      array_push($product_array, $items_socks);
-     }elseif($current_trifie_category_slug == 'photo-tiles'){
-      array_push($product_array, $items_photo_tiles);
-     }else{
+    }else{
       array_push($product_array, $items_generic);
 
     }
@@ -354,11 +349,3 @@ function get_prodigi_quote_price(){
 }
 
 // add_action('woocommerce_before_cart', 'get_prodigi_quote_price');
-
-add_filter( 'woocommerce_cart_shipping_method_full_label', 'bbloomer_remove_shipping_label', 9999, 2 );
-   
-function bbloomer_remove_shipping_label( $label, $method ) {
-    $new_label = preg_replace( '/^.+:/', '', $label );
-    return $new_label;
-}
-

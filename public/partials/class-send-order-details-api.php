@@ -32,6 +32,16 @@ function trpc_skip_dynamic_translation( $skip_selectors ){
 
 // Send Order to Prodigy 
 
+// $new_state = "";
+// function translate_string(){
+//   // global WC
+  
+//   $translated = WC()->countries->get_states( $country )[$state];
+//   echo $translated;
+// }
+
+// translate_string();
+
 function send_order_to_prodigi($order_id){
 
     $order = new WC_Order($order_id);
@@ -57,9 +67,10 @@ function send_order_to_prodigi($order_id){
     $test_api_key_vendor =wcfm_get_option('wcfm_prodigy_test_api_key', '');
     $trifie_cat_slug = array();
     $items = array();
+    $translated = WC()->countries->get_states( $country )[$state];
     // $test_api_key = 'test_1ecc20d0-b515-456e-8583-79e0b320ebf2';
 
-     var_dump( $state);
+    //  var_dump( $state);
     $url = '';
     $api_key = '';
     if($allow_live_mode == 'yes'){
@@ -114,7 +125,7 @@ function send_order_to_prodigi($order_id){
           $attribute = $metaData->get_data();
           $attribute_value = $attribute['value'];
           $attribute_key = $attribute['key'];
-          var_dump($attribute_key);
+          //var_dump($attribute_key);
           // array_push($product_ui, $attribute_key);
           if($attribute_key == 'color'){
             $product_color = $attribute_value;
