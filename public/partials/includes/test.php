@@ -441,7 +441,7 @@ $response = wp_remote_request( $url.'Orders/', $framed_args );
       
     $response_body = wp_remote_retrieve_body( $response ); 
     // var_dump($response['body']);
-    var_dump ($items);
+//     var_dump ($items);
 
     if($response['response']['code'] != 200){
       

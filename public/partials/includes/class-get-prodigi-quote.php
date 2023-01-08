@@ -202,6 +202,41 @@ function get_prodigi_quote() {
         ),
       ),
     );
+    $items_socks = array(
+      'sku' => $prodigiSKU,
+      'copies'=> 1,
+      'attributes' => 
+      array (
+        'size'=>$product_size ? $product_size : 'm',
+      ),
+      'assets' => 
+      array (
+        0 => 
+        array (
+          'printArea' => 'Default',
+         
+          
+        ),
+      ),
+    );
+		
+    $items_photo_tiles = array(
+      'sku' => $prodigiSKU,
+      'copies'=> 1,
+      'attributes' => 
+      array (
+        'color'=>$product_color ? $product_color : 'black',
+      ),
+      'assets' => 
+      array (
+        0 => 
+        array (
+          'printArea' => 'Default',
+         
+          
+        ),
+      ),
+    );
     // Compare Category Slug and assign array
     if($current_trifie_category_slug == 'generic'){
       array_push($product_array, $items_generic);
@@ -217,7 +252,12 @@ function get_prodigi_quote() {
      array_push($product_array, $items_prints);
     }elseif($current_trifie_category_slug == 'framed-canvas'){
      array_push($product_array, $items_framed_canvas);
-    }else{
+    }elseif($current_trifie_category_slug == 'socks'){
+     array_push($product_array, $items_socks);
+    }
+    elseif($current_trifie_category_slug == 'photo-tiles'){
+      array_push($product_array, $items_photo_tiles);
+     }else{
       array_push($product_array, $items_generic);
 
     }
@@ -252,7 +292,25 @@ function get_prodigi_quote() {
   $response = wp_remote_post( $url.'/quotes', $quote_content );
   $response_body = wp_remote_retrieve_body( $response );
   $response_body = json_decode( $response_body, true );
-  $shippingCost = intval($response_body['quotes'][0]['costSummary']['shipping']['amount']);
+	
+	if($response_body['failures']){
+		
+      $failure=$response_body['failures'];
+// 		$shippingCost = $failure;
+		
+      foreach($failure as $fail){
+        foreach($fail as $f){
+          
+          $code = $f['code'];
+          $shippingCost = $code;
+        }
+        
+      }
+     
+  }else{
+     $shippingCost = intval($response_body['quotes'][0]['costSummary']['shipping']['amount']);
+  }
+  //$shippingCost = intval($response_body['quotes'][0]['costSummary']['shipping']['amount']);
  
 
   return $shippingCost;
@@ -314,3 +372,46 @@ function get_prodigi_quote_price(){
 }
 
 // add_action('woocommerce_before_cart', 'get_prodigi_quote_price');
+
+add_filter( 'woocommerce_cart_shipping_method_full_label', 'bbloomer_remove_shipping_label', 9999, 2 );
+   
+function bbloomer_remove_shipping_label( $label, $method ) {
+    $new_label = preg_replace( '/^.+:/', '', $label );
+    return $new_label;
+}
+
+
+
+add_action( 'wp_footer', 'trigger_cart_change' ); 
+function trigger_cart_change() { 
+  if(is_checkout()){
+    ?>
+    <script> 
+       
+       jQuery( function( $ ) {
+         $(function() {
+             element = $('#prodigi_shipping_cart')
+             element.trigger('change')
+         });
+       })
+     </script>
+
+    <?php
+	
+  }
+    if (is_cart()) : 
+    ?> 
+    <script> 
+		jQuery( function( $ ) {
+        $(function() {
+            element = $('#prodigi_shipping_cart')
+            element.trigger('change')
+        });
+		})
+    </script> 
+    <?php 
+    endif; 
+}
+
+
+

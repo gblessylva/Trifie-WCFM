@@ -160,3 +160,8 @@ select#prodigi_shipping_cart.select{
 form.woocommerce-shipping-calculator{
     /* display: none !important; */
 }
+
+
+.hide_place_order {
+    display: none !important;
+}
