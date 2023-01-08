@@ -87,9 +87,13 @@ add_filter('wcfm_products_manage_variable_start', function($product_id){
     $printable_sku = get_post_meta($product_id, '_printable_sku', true);
     // var_dump ($printable_sku);
 
+
     foreach($the_query as $post){
 
-        $options_array[$post->ID] = $post->post_name;
+        $prodigi_sku = get_post_meta($post->ID, 'prodigi_trifie_sku', true);
+        $options_array[$prodigi_sku] = $prodigi_sku;
+        // var_dump($prodigi_sku);
+        // $options_array[$post->ID] = $post->post_name;
     }
 
     $html = "";

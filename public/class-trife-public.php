@@ -61,6 +61,11 @@ class Trife_Public {
 		require_once plugin_dir_path( __FILE__ ) . 'partials/class-add-variation-fields.php';
 		require plugin_dir_path( __FILE__ ) . 'partials/includes/class-sync-order-status.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/includes/class-get-prodigi-quote.php';
+		require_once plugin_dir_path( __FILE__ ) . 'partials/class-create-custom-email-template.php';
+		require_once plugin_dir_path( __FILE__ ) . 'partials/includes/class-include-vendor-info-on-orders.php';
+		require plugin_dir_path( __FILE__) . 'partials/class-load-select-two.php';
+		require plugin_dir_path( __FILE__) . 'partials/includes/class-send-order-to-prodgi-api.php';
+		require plugin_dir_path( __FILE__) . 'partials/includes/class-override-woocommerce-order-status.php';
 
 
 		$this->plugin_name = $plugin_name;
@@ -88,6 +93,9 @@ class Trife_Public {
 		 */
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/trife-public.css', array(), $this->version, 'all' );
+		
+		// enqueue Bootstrap
+		// wp_enqueue_style( $this->plugin_name, 'https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css', array(), $this->version, 'all' );
 		wp_enqueue_style( $this->plugin_name, 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css', array(), $this->version, 'all' );
 
 	}
@@ -110,9 +118,12 @@ class Trife_Public {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-		wp_enqueue_script($this->plugin_name, 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array( 'jquery' ), $this->version, false );
+
+		wp_enqueue_script($this->plugin_name, 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array( 'jquery' ), $this->version, true );
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/trife-public.js', array( 'jquery' ), $this->version, false );
-		// wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/trife-control.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . '/js/trife-control.js', array( 'jquery' ), $this->version, false );
+		
+		// Load Select2 in wordpress
 	}
 
 }

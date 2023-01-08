@@ -84,6 +84,7 @@
         })
     })
 
+   
     // Compare Admin Price
     $(document).ready(function(){
 
@@ -248,27 +249,226 @@
         }
       })
     
-      // Update cart price
+      
+      jQuery( function( $ ) {
+        $('.woocommerce').on('change', 'select#prodigi_shipping', function(){
+          // console.log('Changed');
+          let err = document.querySelector('.shipping-error');
+          err.textContent = 'Shipping costs being calculated. Please wait.';
+          err.style.fontSize= "18px";
+          err.style.color ="green";
+        
+          
+        })
+      }
+        )
+      ;
+      
+
 
       $("#prodigi_shipping").change(function() {
-        console.log(this.value);
-       
-
+        // console.log(this.value, 'iii');
       $.ajax({
         url: '/wp-admin/admin-ajax.php',
         type: 'POST',
         data: {
-          action: 'get_prodigi_quote',
+          action: 'get_prodigi_quote_price',
+          // action: 'rc_generate_p',
           shipping_price: this.value
         },
       }).done(function(data){
-        console.log(data);
+        // console.log ('data is', data);
+         localStorage.setItem('result', data);
+        let errs = document.querySelector('.shipping-error');
+        errs.textContent = '';
         $('body').trigger('update_checkout');
+
+        if(data=='SkuNotFound'){
+          var errorMessage = $('.shipping-error');
+          errorMessage.text('At least one of the selected product(s) is not available. Please remove it and try again.');
+          errorMessage.css({'color':'red', 'text-align':'left', 'font-size': '18px'} );
+          // console.log(errorMessage);
+          console.log( $('#place_order'))
+          $('#place_order').hide();          
+        }
+
       });
       })
+      
+
+       $('body').on('updated_checkout', function(data){ 
+         var skuResult = localStorage.getItem('result')
+        console.log('my data', skuResult)
+       var rtfee = $('.fee .woocommerce-Price-amount bdi').text();
+       var rtfee = rtfee.replace(/[^0-9\.]+/g,"");
+       var rtfee = parseFloat(rtfee);
+
+      if(parseFloat(skuResult) <= 0){
+        var errorMessage = $('.shipping-error');
+        errorMessage.text('This Shipping method ' +$('#prodigi_shipping').val() + ' is not available for your location. Please select another shipping method.');
+        errorMessage.css({'color':'red', 'text-align':'center', 'font-size': '12px'} );
+        // console.log(errorMessage);
+        
+      }else if(skuResult == 'SkuNotFound'){
+        var errorMessage = $('.shipping-error');
+		  
+		 var order_btn = $('#place_order');
+		  order_btn.addClass('hide_place_order')
+// 		  console.log(order_btn);
+        errorMessage.text('At least one of the selected Product(s) is not available. Please remove it and try again.');
+        errorMessage.css({'color':'red', 'text-align':'left', 'font-size': '18px'} );
+		  
+      }else{
+        $('#cost_value').val(rtfee);
+        $('#cost_value').trigger('change');
+      }
+
+      $( 'body' ).on( 'updated_wc_div', function(){
+        console.log('updated_cart_totals');
+      })
+ 
+    })
+
+    jQuery( document.body ).on( 'updated_wc_div', update_prodigi_fee_cart );
+    jQuery( document.body ).on( 'updated_cart_totals', update_prodigi_fee_cart );
+	
+	jQuery( document.body ).on( 'updated_wc_div', function(){
+		 var attt = $('.restore-item');
+		if(attt.text()== "Undo?"){
+			$('#prodigi_shipping_cart').trigger('change')
+			console.log('Item removed from cart');
+		}
+          
+
+	
+ })
+ 
+// jQuery( function($) {       
+    
+// });
+	
+
+    function update_prodigi_fee_cart() {
+		  
+		
+		
+      var skuResult = localStorage.getItem('result')
+      // console.log('mysku', skuResult)
+      var rtfee = $('.fee .woocommerce-Price-amount bdi').text();
+       var rtfee = rtfee.replace(/[^0-9\.]+/g,"");
+       var rtfee = parseFloat(rtfee);
+      //  console.log(parseFloat(skuResult))
+      if(parseFloat(skuResult) <= 0){
+        var errorMessage = $('.shipping-error');
+        errorMessage.text('The selected Shipping method ' +$('#prodigi_shipping').val() + ' is not available for your location. Please select another shipping method.');
+        errorMessage.css({'color':'red', 'text-align':'center', 'font-size': '12px'} );
+      }
+      else if(skuResult=='SkuNotFound'){
+        var errorMessage = $('.shipping-error');
+        errorMessage.text('At least one of the selected Product(s) is not available. Please remove it and try again.');
+        errorMessage.css({'color':'red', 'text-align':'left', 'font-size': '18px'} );
+        $('.wc-proceed-to-checkout').hide();
+      }
+		else if(skuResult=='MissingRequiredAttributes'){
+			 var errorMessage = $('.shipping-error');
+        errorMessage.text('At least one of the selected Product(s) is missing some required attributes. Please remove it and try again.');
+        errorMessage.css({'color':'red', 'text-align':'left', 'font-size': '18px'} );
+        $('.wc-proceed-to-checkout').hide();
+		}
+      else{
+        $('#cost_value').val(rtfee);
+        $('#cost_value').trigger('change');
+		  var errorMessage = $('.shipping-error');
+        errorMessage.text('');
+       
+      }
+      }
 
    })( jQuery );
 
+
+
+  //  Calculate Shipping method
+var timeout;
+
+jQuery( function( $ ) {
+   
+// 	$('.product-remove a').click(function(){
+// 		console.log('Emotion');
+// 	})
+
+  $('.woocommerce').on('change', 'select#prodigi_shipping_cart', function(){
+    // console.log('Changed');
+    error = document.querySelector('.shipping-error');
+    error.textContent = 'Shipping costs being calculated. Please wait.';
+    error.style.fontSize= "18px";
+    error.style.color ="green";
+  
+    
+  })
+}
+  )
+;
+
+// Trigger to update cart
+// 
+
+
+
+jQuery( function( $ ) {
+	
+	$('.woocommerce').on('change', 'select#prodigi_shipping_cart', function(){
+    // console.log(this.value);
+		$.ajax({
+        type: "post",
+        url: "/wp-admin/admin-ajax.php",
+        data: {
+          action: 'get_prodigi_quote_price',
+          shipping_price: this.value
+        },
+        success: function(response){
+          console.log(response, 'response is');
+          localStorage.setItem('result', response)
+
+          if(response == 'SkuNotFound'){
+            // localStorage.setItem('result', response);
+            error = document.querySelector('.shipping-error');
+            error.textContent = 'At least one of the selected Product(s) is not available. Please remove it and try again.';
+            error.style.color = "red";
+            cart = document.querySelector('.wc-proceed-to-checkout');
+            cart.style.display = "none";
+          }else if(response==0){
+            error = document.querySelector('.shipping-error');
+            error.textContent = 'The Selected Shipping Method is not Availablein your region';
+            error.style.color = "red";
+          }else{
+            error = document.querySelector('.shipping-error');
+          error.textContent = ''
+          }
+          
+			if ( timeout !== undefined ) {
+				clearTimeout( timeout );
+			}
+			timeout = setTimeout(function() {
+        
+			$("[name='calc_shipping']").trigger("click");
+
+      // skuResult = localStorage.getItem('result');
+      // console.log(skuResult)
+
+     
+		}, 50 ); // 1 second delay, half a second (500) seems comfortable too
+	
+		} 
+        });
+
+
+	});
+
+} );
+
+
+ 
    
 let variablePricingField = document.querySelectorAll('[data-name="regular_price"]');
 let adminMinPrice = document.querySelectorAll('[data-name="_admin_min_price"]');
@@ -299,5 +499,8 @@ variablePricingField.forEach((field)=>{
 
   })
   
-})
+});
+
+
+
 

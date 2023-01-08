@@ -33,5 +33,10 @@
 	$( document ).ready(function() {
 		console.log( fileInput );
 	});
+
+	$(document).ready(function() {
+		console.log('Loaded');
+	})
 	
 })( jQuery );
+

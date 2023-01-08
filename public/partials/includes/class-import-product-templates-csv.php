@@ -21,7 +21,7 @@ function generate_template_upload_page() {
         name="frmCSVImport" id="frmCSVImport"
         enctype="multipart/form-data">
         <div class="input-row">
-            <label class="col-md-4 control-label">Choose CSV
+            <label class="col-md-4 control-label">Choose CSVs
                 File</label> <input type="file" name="template-file"
                 id="file" accept=".csv">
             <button type="submit" id="submit" name="import-template"
