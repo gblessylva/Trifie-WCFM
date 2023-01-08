@@ -178,7 +178,3 @@ add_action('sync_prodigi_orders', 'load_all_orders');
     
     }
     // End of load orders function 
-
-
-
- 
