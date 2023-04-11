@@ -111,7 +111,7 @@ $count_cpt1['any']     = $count_cpt1['publish'] + $count_cpt1['pending'] + $coun
 							<th><?php _e( 'Recomended Size', 'wcfm-cpt' ); ?></th>
 							<th><?php _e( 'Categories', 'wcfm-cpt' ); ?></th>
 							<th><?php _e( 'Product Cost', 'wcfm-cpt' ); ?></th>
-							<th><?php _e( 'Min Price', 'wcfm-cpt' ); ?></th>
+							<th><?php _e( 'Min Prices', 'wcfm-cpt' ); ?></th>
 							<th><?php _e( 'Actions', 'wcfm-cpt' ); ?></th>
 						</tr>
 					</tfoot>
