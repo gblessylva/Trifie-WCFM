@@ -16,7 +16,7 @@
  * Plugin Name:       Trife WCFM
  * Plugin URI:        https://github.com/gblessylva/
  * Description:       WooCommerce Integration with Prodigi API and WCFM
- * Version:           1.1.22
+ * Version:           1.1.24
  * Author:            gblessylva
  * Author URI:        https://github.com/gblessylva
  * License:           GPL-2.0+

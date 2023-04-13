@@ -742,7 +742,7 @@ function load_template_products(){
     }else{
         $st_st = 'Un-available';
     }
-    $new_stock_html = '<span class="'.$stock_status.'">' . $st_st . '</span>';
+    $new_stock_html = '<span class="product-'.$stock_status.'">' . $st_st . '</span>';
     $trifie_product_min_price= get_post_meta(get_the_ID(), 'trifie_product_min_price', true);
 
     $return_json[$index][] = $link;
