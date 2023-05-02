@@ -71,6 +71,9 @@ function get_prodigi_quote() {
     // var_dump($shipping_price);
     $url = '';
     $api_key = '';
+    $size = '';
+    $prodigiSKU= '';
+    $prodigiSKU = '';
     $product_array = array();
 
     // Check if Application is LIVE or TEST
@@ -84,20 +87,26 @@ function get_prodigi_quote() {
 
     // Loop through cart items
 
-    foreach ($items as $item => $values) {
+  foreach ($items as $item => $values) {
+      // foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
+
+        // $product = $cart_item['data'];
       $product_id = $values['product_id'];
+      $quantity = $values['quantity'];
       $prodigiSKU = get_post_meta($product_id, '_printable_sku', true);
       $current_post = get_posts(array('post_type' => 'trifie_sku', 'meta_key' => 'prodigi_trifie_sku', 'meta_value' => $prodigiSKU));
       $current_trifie_category = get_the_terms($current_post[0]->ID, 'trifie_sku_category');
       $current_trifie_category_slug = $current_trifie_category[0]->slug;
       $custome_shipping_country = WC()->customer->get_shipping_country();
       $copies = $woocommerce->cart->get_cart_item_quantities();
-
-      // Check Product Category SLug
-      
+      $attributes = $values['variation'];
+      $product_size = $attributes['attribute_pa_size'];
+      $product_color = $attributes['attribute_pa_color'];
+      // var_dump($attributes);
+   
       $items_generic = array(
         'sku' => $prodigiSKU,
-        'copies'=> 1,
+        'copies'=> $quantity,
         'assets' => 
         array (
           0 => 
@@ -106,10 +115,12 @@ function get_prodigi_quote() {
           ),
         ),
 
-    );
+      );
+
+
     $items_framed = array(
       'sku' => $prodigiSKU,
-      'copies'=> 1,
+      'copies'=> $quantity,
       'attributes' => 
       array (
         'color'=>$product_color ? $product_color : 'black',
@@ -125,7 +136,7 @@ function get_prodigi_quote() {
     $items_postcard = array(
       
       'sku' => $prodigiSKU ? '': $item_sku,
-      'copies'=> 1,
+      'copies'=> $quantity,
      
       'assets' => 
       array (
@@ -138,11 +149,11 @@ function get_prodigi_quote() {
     );
     $items_apparel = array(
       'sku' => $prodigiSKU,
-      'copies'=> 1,
+      'copies'=> $quantity,
       'attributes' => 
         array (
-          'size' =>$product_size ? $product_size : 'm',
-          'color'=>$product_color ? $product_color : 'black',
+          'size' =>$product_size,
+          'color'=>$product_color,
 
         ),
       'assets' => 
@@ -157,7 +168,7 @@ function get_prodigi_quote() {
     $items_patch_round = array(
       
       'sku' => $prodigiSKU,
-      'copies'=> 1,
+      'copies'=> $quantity,
      
       'assets' => 
       array (
@@ -172,7 +183,7 @@ function get_prodigi_quote() {
     $items_prints = array(
       
       'sku' => $prodigiSKU,
-      'copies'=> 1,
+      'copies'=> $quantity,
      
       'assets' => 
       array (
@@ -184,9 +195,10 @@ function get_prodigi_quote() {
         ),
       ),
     );
+    
     $items_framed_canvas = array(
       'sku' => $prodigiSKU,
-      'copies'=> 1,
+      'copies'=> $quantity,
       'attributes' => 
       array (
         'color'=>$product_color ? $product_color : 'black',
@@ -204,7 +216,7 @@ function get_prodigi_quote() {
     );
     $items_socks = array(
       'sku' => $prodigiSKU,
-      'copies'=> 1,
+      'copies'=> $quantity,
       'attributes' => 
       array (
         'size'=>$product_size ? $product_size : 'm',
@@ -222,7 +234,7 @@ function get_prodigi_quote() {
 		
     $items_photo_tiles = array(
       'sku' => $prodigiSKU,
-      'copies'=> 1,
+      'copies'=> $quantity,
       'attributes' => 
       array (
         'color'=>$product_color ? $product_color : 'black',
@@ -261,6 +273,7 @@ function get_prodigi_quote() {
       array_push($product_array, $items_generic);
 
     }
+
   }
   // End of Loop
 
@@ -292,6 +305,7 @@ function get_prodigi_quote() {
   $response = wp_remote_post( $url.'/quotes', $quote_content );
   $response_body = wp_remote_retrieve_body( $response );
   $response_body = json_decode( $response_body, true );
+  $response_test = wp_remote_retrieve_body( $response );
 	
 	if($response_body['failures']){
 		
@@ -310,7 +324,7 @@ function get_prodigi_quote() {
   }else{
      $shippingCost = intval($response_body['quotes'][0]['costSummary']['shipping']['amount']);
   }
-  //$shippingCost = intval($response_body['quotes'][0]['costSummary']['shipping']['amount']);
+  // $shippingCost = intval($response_body['quotes'][0]['costSummary']['shipping']['amount']);
  
 
   return $shippingCost;

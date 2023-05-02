@@ -122,9 +122,10 @@ class Trife_Public {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
+		wp_enqueue_script($this->plugin_name, 'https://sdk.amazonaws.com/js/aws-sdk-2.357.0.min.js', array( 'jquery' ), $this->version, false );
 		wp_enqueue_script($this->plugin_name, 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array( 'jquery' ), $this->version, true );
 		wp_enqueue_script($this->plugin_name, 'https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js', array( 'jquery' ), $this->version, true );
+		
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/trife-public.js', array( 'jquery' ), $this->version, false );
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . '/js/trife-control.js', array( 'jquery' ), $this->version, false );
 		

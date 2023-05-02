@@ -2,53 +2,6 @@
 	'use strict';
 
      jQuery(document).ready(function($){
-        
-      
-      function uploadFromUrlToS3(imageUrl) {
-        const bucketName = 'trifie';
-        const now = new Date();
-        const objectKey = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}.jpg`;
-      
-        // Initialize the AWS SDK with your credentials
-        AWS.config.update({
-          accessKeyId: 'AKIAWMGACIHRIXWT6EYH',
-          secretAccessKey: 'yqOq2KMuXHG8Q3fe+oldyo65UKm1Ip06xMI6GJRcP'
-        });
-
-        // "qOq2KMuXHG8Q3fe+oldyo65UKm1Ip06xMI6GJRcP"
-      
-        // Create an S3 object instance with the configured region
-        const s3 = new AWS.S3({ region: 'ap-northeast-1' });
-      
-        // Use jQuery.get to fetch the image data
-        $.get(imageUrl, function(imageData) {
-      
-          const params = {
-            Bucket: bucketName,
-            Key: objectKey,
-            Body: imageData,
-            ACL: 'private'
-          };
-      
-          // Upload the image to S3 with the specified ACL
-          s3.upload(params, function(err, data) {
-            if (err) {
-              console.error(`Failed to upload image to S3: ${err}`);
-              return;
-            }
-      
-            // Generate a signed URL for the private image
-            const url = s3.getSignedUrl('getObject', {
-              Bucket: bucketName,
-              Key: objectKey,
-              Expires: 3600 // Set the expiration time in seconds (1 hour in this example)
-            });
-            console.log(url);
-          });
-        });
-      }
-      
-      
 
 
         var mediaUploader;
@@ -76,9 +29,6 @@
             $('#high-res').attr("src", attachment.url);
            
             $('#_printable_image').val(attachment.url);
-           
-            uploadFromUrlToS3(attachment.url);
-            // uploadToS3(attachment.url)
 
            
             if( $('#_printable_image').val() != ''){
@@ -357,7 +307,7 @@
         var errorMessage = $('.shipping-error');
         errorMessage.text('This Shipping method ' +$('#prodigi_shipping').val() + ' is not available for your location. Please select another shipping method.');
         errorMessage.css({'color':'red', 'text-align':'center', 'font-size': '12px'} );
-        // console.log(errorMessage); 
+        // console.log(errorMessage);
         
       }else if(skuResult == 'SkuNotFound'){
         var errorMessage = $('.shipping-error');
@@ -368,17 +318,7 @@
         errorMessage.text('At least one of the selected Product(s) is not available. Please remove it and try again.');
         errorMessage.css({'color':'red', 'text-align':'left', 'font-size': '18px'} );
 		  
-      }else if(skuResult == 'MustBeInAllowedValues'){
-        var errorMessage = $('.shipping-error');
-		  
-		 var order_btn = $('#place_order');
-		  order_btn.addClass('hide_place_order')
-// 		  console.log(order_btn);
-        errorMessage.text('At least one of the selected Product(s) has an invalid attribute. Please remove it and try again.');
-        errorMessage.css({'color':'red', 'text-align':'left', 'font-size': '18px'} );
-		  
-      }
-      else{
+      }else{
         $('#cost_value').val(rtfee);
         $('#cost_value').trigger('change');
       }
@@ -497,15 +437,7 @@ jQuery( function( $ ) {
             error.style.color = "red";
             cart = document.querySelector('.wc-proceed-to-checkout');
             cart.style.display = "none";
-          }else if(response == 'MustBeInAllowedValues'){
-            // localStorage.setItem('result', response);
-            error = document.querySelector('.shipping-error');
-            error.textContent = 'At least one of the selected Product(s) is missing a required attribute. Please remove it and try again.';
-            error.style.color = "red";
-            cart = document.querySelector('.wc-proceed-to-checkout');
-            cart.style.display = "none";
-          }
-          else if(response==0){
+          }else if(response==0){
             error = document.querySelector('.shipping-error');
             error.textContent = 'The Selected Shipping Method is not Availablein your region';
             error.style.color = "red";
