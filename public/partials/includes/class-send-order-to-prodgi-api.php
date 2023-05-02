@@ -16,7 +16,7 @@ function sendOrder_details(){
         $prodigiSKU = get_post_meta($product_id, '_printable_sku', true);
        
         $prodigiSKU = get_prodigi_sku($prodigiSKU);
-        echo $prodigiSKU;
+        // echo $prodigiSKU;
 
     }
 

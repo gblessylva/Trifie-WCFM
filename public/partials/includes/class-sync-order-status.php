@@ -66,7 +66,7 @@ add_action('sync_prodigi_orders', 'load_all_orders');
     function load_all_orders(){
    
     $query = new WC_Order_Query( array(
-            'limit' => 10,
+            'limit' => 20,
             'orderby' => 'date',
             'order' => 'DESC',
             'return' => 'ids',

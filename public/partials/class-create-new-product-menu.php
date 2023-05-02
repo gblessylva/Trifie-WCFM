@@ -133,10 +133,13 @@ function wcfm_csm_load_scripts( $end_point ) {
 	
 	switch( $end_point ) {
 		case 'product-templates':
+            wp_enqueue_script('gridTable', 'https://unpkg.com/gridjs/dist/gridjs.umd.js', array( 'jquery' ), $WCFM->version, true);
 			wp_enqueue_script( 'wcfm_brands_js',  $plugin_url .'../js/load-table.js', array( 'jquery' ), $WCFM->version, true );
+
             wp_enqueue_script('jquery-datatables-js','//cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js',array('jquery'));
             wp_enqueue_script('jquery-datatables-responsive-js','//cdn.datatables.net/responsive/2.2.6/js/dataTables.responsive.min.js',array('jquery'));
-            // wp_enqueue_script('table', 'https://table-sortable.now.sh/table-sortable.js', array( 'jquery' ), $WCFM->version, true);
+            wp_enqueue_script('table', 'https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js', array( 'jquery' ), $WCFM->version, true);
+           
 
             wp_enqueue_script( 'clone-template', $plugin_url .'../js/clone-template.js', array( 'jquery' ), $WCFM->version, true );
             wp_localize_script( 'clone-template', 'CloneAjax', array(
@@ -171,6 +174,10 @@ function wcfm_csm_load_styles( $end_point ) {
             wp_enqueue_style('jquery-datatables-css','//cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css');
             wp_enqueue_style('jquery-datatables-responsive-css','//cdn.datatables.net/responsive/2.2.6/css/responsive.dataTables.min.css');
 
+            wp_enqueue_style('gritStyles','https://unpkg.com/gridjs/dist/theme/mermaid.min.css');
+
+            wp_enqueue_style('jquery-tables-responsive-css','https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css');
+            wp_enqueue_style('jquery-tables-responsive-css','https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css');
             
 		break;
 	}
@@ -180,8 +187,22 @@ add_action( 'after_wcfm_load_styles', 'wcfm_csm_load_styles' );
 
 
 
-add_action('wp_ajax_datatables_endpoint', 'prodigi_load_templates'); //logged in
-add_action('wp_ajax_no_priv_datatables_endpoint', 'prodigi_load_templates'); //not logged in
+add_action('wp_ajax_datatables_endpoint', 'load_template_products'); //logged in
+add_action('wp_ajax_no_priv_datatables_endpoint', 'load_template_products'); //not logged in
+
+// add_action('wp_ajax_datatables_endpoint', 'prodigi_load_templates'); //logged in
+// add_action('wp_ajax_no_priv_datatables_endpoint', 'prodigi_load_templates'); //not logged in
+
+
+function load_table_scripts() {
+    wp_enqueue_script( 'jquery' );
+    wp_enqueue_script( 'table-js',  $plugin_url .'../js/load-table.js', array( 'jquery' ), $WCFM->version, true );
+    wp_localize_script( 'table-js', 'tableAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
+}
+add_action( 'wp_enqueue_scripts', 'load_table_scripts' );
+
+
+
 
 
 function prodigi_load_templates(){
@@ -200,7 +221,7 @@ function prodigi_load_templates(){
     }
     
     $args = array(
-                        'posts_per_page'   => $length,
+                        'posts_per_page'   => -1,
                         'offset'           => $offset,
                         'category'         => '',
                         'category_name'    => '',
@@ -528,18 +549,7 @@ function prodigi_load_templates(){
             // Date
             $wcfm_products_json_arr[$index][] =  get_post_meta($wcfm_products_single->ID, '_printable_sku', true);
             
-            // apply_filters( 'wcfm_products_date_display', date_i18n( wc_date_format(), strtotime($wcfm_products_single->post_date) ), $wcfm_products_single->ID, $the_product );
-            
-            // Vendor
-            // $vendor_name = '&ndash;';
-            // if( !$WCFM->is_marketplace || wcfm_is_vendor() ) {
-            //     $wcfm_products_json_arr[$index][] =  $vendor_name;
-            // } else {
-            //     $store_name = wcfm_get_vendor_store_by_post( $wcfm_products_single->ID );
-            //     if( $store_name ) {
-            //         $vendor_name = $store_name;
-            //     }
-            //     $wcfm_products_json_arr[$index][] =  $vendor_name;
+           
             // }
             $wcfm_products_json_arr[$index][] =  get_post_meta($wcfm_products_single->ID, 'trifie_product_min_price', true);
 
@@ -691,4 +701,70 @@ function clone_prodigi_template(){
 
     exit;
 }
+
+
+function load_template_products(){
+    global $wpdb;
+  //some basic query arguments 
+  $posts_per_page = -1;
+  $args = array(
+    'post_type'             => 'product',
+    'post_status'       => 'template',
+    'posts_per_page'        => $posts_per_page,
+    'post_parent'      => '',
+    'post_status'      => array('template' ),
+  );
+  //query
+  $postsQ = new WP_Query( $args );
+ 
+  //create empty array and loop through results, populating array
+  $return_json = array();
+  $index = 0;
+  while($postsQ->have_posts()) {
+    $url = get_the_permalink(get_the_ID());
+    $postsQ->the_post();
+     $actions = '<a class="wcfm-action-icon" href="#"><span class="fa fa-copy clone-template text_tip" data-id= "'.get_the_ID().'" data-tip="' . esc_attr__( 'Clone Template', 'wcfm-cpt' ) . '"></span></a>';
+    $actions = '<a class="wcfm-action-icon " target="_blank" href="'.site_url().'/store-manager/trifie_sku-manage/'.get_the_ID().'"><span class="fa fa-edit text_tip" data-tip="' . esc_attr__( 'Edit Template', 'wcfm-cpt' ) . '"></span></a>';;
+    $actions .= '<a class="wcfm-action-icon " target="_blank" href="'.site_url().'/store-manager/products-manage?prodigi-id='.get_the_ID().'"><span class="fa fa-clone text_tip" data-tip="' . esc_attr__( 'Clone Template', 'wcfm-cpt' ) . '"></span></a>';
+     $link = get_the_title();
+    // $link = get_the_title();
+    $prod= wc_get_product( get_the_ID() );
+    
+    $prodigi_trifie_sku = get_post_meta(get_the_ID(), '_printable_sku', true);
+    $sku = get_post_meta(get_the_ID(), '_sku', true);
+    $trifie_sku_recomended_size= get_post_meta(get_the_ID(), 'trifie_sku_recomended_size', true);
+    $trifie_product_cost =get_post_meta(get_the_ID(), '_price', true);
+
+    $stock_status = $prod->get_stock_status();
+    $st_st = '';
+    if($stock_status == 'instock'){
+        $st_st = 'Available';
+    }else{
+        $st_st = 'Un-available';
+    }
+    $new_stock_html = '<span class="product-'.$stock_status.'">' . $st_st . '</span>';
+    $trifie_product_min_price= get_post_meta(get_the_ID(), 'trifie_product_min_price', true);
+
+    $return_json[$index][] = $link;
+    $return_json[$index][] = $sku;
+    $return_json[$index][] = $new_stock_html;
+    $return_json[$index][]= $trifie_product_cost;
+    $return_json[$index][]= $trifie_product_min_price; 
+    $return_json[$index][] = $prodigi_trifie_sku;
+    // $return_json[$index][] = $trifie_sku_recomended_size;
+    // $return_json[$index][]= $trifie_product_min_price;
+   
+    $return_json[$index][]=$actions;
+    
+    $index++;
+
+    
+  }
+  //return the result to the ajax request and die
+//   echo json_encode(array("recordsTotal"=>$postsQ->found_posts, 'data' => $return_json));
+    echo json_encode($return_json);
+  wp_die();
+
+}
+
 

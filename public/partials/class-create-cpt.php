@@ -215,7 +215,7 @@ add_action('wp_ajax_no_priv_load_cpt_products','load_cpt_products');
 
 function load_cpt_products(){
     global $wpdb;
-  //some basic query arguments
+  //some basic query arguments 
   $posts_per_page = -1;
   $args = array(
     'post_type'             => 'trifie_sku',

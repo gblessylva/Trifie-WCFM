@@ -84,6 +84,13 @@
   color: red; 
 }
 
+    .product-instock{
+        background: green;
+        padding: 5px;
+		color:#fff ;
+		border-radius: 3px;
+    }
+
 .wcfm-tabWrap .wcfm-container {
 	display: none;
 }

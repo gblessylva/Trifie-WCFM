@@ -165,3 +165,7 @@ form.woocommerce-shipping-calculator{
 .hide_place_order {
     display: none !important;
 }
+
+.gridjs-pagination .gridjs-pages button {
+    color: #302e2e !important;
+}
