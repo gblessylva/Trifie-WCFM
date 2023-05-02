@@ -11,8 +11,8 @@
       
         // Initialize the AWS SDK with your credentials
         AWS.config.update({
-          accessKeyId: 'AKIAWMGACIHRIXWT6EYH',
-          secretAccessKey: 'yqOq2KMuXHG8Q3fe+oldyo65UKm1Ip06xMI6GJRcP'
+          accessKeyId: '',
+          secretAccessKey: ''
         });
 
         // "qOq2KMuXHG8Q3fe+oldyo65UKm1Ip06xMI6GJRcP"
