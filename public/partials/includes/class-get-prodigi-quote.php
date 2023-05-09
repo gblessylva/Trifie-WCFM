@@ -100,9 +100,21 @@ function get_prodigi_quote() {
       $custome_shipping_country = WC()->customer->get_shipping_country();
       $copies = $woocommerce->cart->get_cart_item_quantities();
       $attributes = $values['variation'];
-      $product_size = $attributes['attribute_pa_size'];
-      $product_color = $attributes['attribute_pa_color'];
-      // var_dump($attributes);
+	  $product_size ='';
+	  $product_color ='';
+	  if( $attributes['attribute_pa_size']){
+		  $product_size =  $attributes['attribute_pa_size'];
+	  }elseif( $attributes['attribute_size']){
+		  $product_size = $attributes['attribute_size'];
+	  }
+	   if( $attributes['attribute_pa_color']){
+		  $product_color = $attributes['attribute_pa_color'];
+	  }elseif( $attributes['attribute_color']){
+		  $product_color = $attributes['attribute_color'];
+	  }
+//       $product_size = $attributes['attribute_pa_size'];
+//       $product_color = $attributes['attribute_pa_color'];
+//       var_dump($product_size);
    
       $items_generic = array(
         'sku' => $prodigiSKU,
@@ -310,7 +322,7 @@ function get_prodigi_quote() {
 	if($response_body['failures']){
 		
       $failure=$response_body['failures'];
-// 		$shippingCost = $failure;
+		$shippingCost = $failure;
 		
       foreach($failure as $fail){
         foreach($fail as $f){
@@ -322,7 +334,7 @@ function get_prodigi_quote() {
       }
      
   }else{
-     $shippingCost = intval($response_body['quotes'][0]['costSummary']['shipping']['amount']);
+     $shippingCost = floatval( $response_body['quotes'][0]['costSummary']['shipping']['amount']);
   }
   // $shippingCost = intval($response_body['quotes'][0]['costSummary']['shipping']['amount']);
  
@@ -343,10 +355,19 @@ add_filter( 'woocommerce_add_cart_item_data', 'save_custom_data', 10 );
 
 add_action( 'woocommerce_cart_calculate_fees', 'custom_fee_based_on_cart_total', 10, 1 );
 
+add_filter( 'wc_get_price_decimals', 'change_prices_decimals', 20, 1 );
+function change_prices_decimals( $decimals ){
+    if( is_cart() || is_checkout() || is_account_page() )
+        $decimals = 2;
+    return $decimals;
+}
+
+
 function custom_fee_based_on_cart_total( $cart ) {
     // The conditional Calculation
-    $fee = get_prodigi_quote();
-        $cart->add_fee( __( "Shipping Cost", "woocommerce" ), $fee, false );
+     $fee = get_prodigi_quote();
+    // $fee = 23.6;
+    $cart->add_fee( __( "Shipping Cost", "woocommerce" ), (float) $fee, false );
         
 }
 

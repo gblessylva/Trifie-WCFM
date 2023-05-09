@@ -16,7 +16,9 @@
         });
 
         // "qOq2KMuXHG8Q3fe+oldyo65UKm1Ip06xMI6GJRcP"
+        // AKIAWMGACIHRIXWT6EYH
       
+        // yqOq2KMuXHG8Q3fe+oldyo65UKm1Ip06xMI6GJRcP
         // Create an S3 object instance with the configured region
         const s3 = new AWS.S3({ region: 'ap-northeast-1' });
       
@@ -148,9 +150,10 @@
         let sale_price = $('#sale_price'); 
 
         regular_price.change(function(){
-          let admin_price_value = parseInt( admin_price.val() );
-          let regular_price_value =  parseInt (regular_price.val());
-          let sale_price_value = parseInt(sale_price.val());
+        
+          let admin_price_value = parseFloat( admin_price.val() );
+          let regular_price_value =  parseFloat (regular_price.val());
+          let sale_price_value = parseFloat(sale_price.val());
           let submitBTN = $('.wcfm_submit_button');
             if (regular_price_value <= admin_price_value ){
               regular_price.addClass('is-invalid');
@@ -351,7 +354,7 @@
         console.log('my data', skuResult)
        var rtfee = $('.fee .woocommerce-Price-amount bdi').text();
        var rtfee = rtfee.replace(/[^0-9\.]+/g,"");
-       var rtfee = parseFloat(rtfee);
+       var rtfee = rtfee;
 
       if(parseFloat(skuResult) <= 0){
         var errorMessage = $('.shipping-error');
@@ -416,8 +419,8 @@
       // console.log('mysku', skuResult)
       var rtfee = $('.fee .woocommerce-Price-amount bdi').text();
        var rtfee = rtfee.replace(/[^0-9\.]+/g,"");
-       var rtfee = parseFloat(rtfee);
-      //  console.log(parseFloat(skuResult))
+      //  rtfee = 77.9;
+     console.log(parseFloat(skuResult))
       if(parseFloat(skuResult) <= 0){
         var errorMessage = $('.shipping-error');
         errorMessage.text('The selected Shipping method ' +$('#prodigi_shipping').val() + ' is not available for your location. Please select another shipping method.');
@@ -425,7 +428,7 @@
       }
       else if(skuResult=='SkuNotFound'){
         var errorMessage = $('.shipping-error');
-        errorMessage.text('At least one of the selected Product(s) is not available. Please remove it and try again.');
+        errorMessage.text('At least one of the selected Product(s) is not available. Please remove it and try again.');
         errorMessage.css({'color':'red', 'text-align':'left', 'font-size': '18px'} );
         $('.wc-proceed-to-checkout').hide();
       }
@@ -547,7 +550,7 @@ let errorHolder = document.querySelectorAll('.regular_variation_price');
 variablePricingField.forEach((field)=>{
   adminMinPrice.forEach((price)=>{
     field.addEventListener('change', (e)=>{
-      if(parseInt(field.value) <= parseInt(price.value)){
+      if(parseFloat(field.value) <= parseFloat(price.value)){
         errorHolder.forEach((error)=>{
           error.innerHTML = "<span class='error-message'>The Price must be greater than the Minimum Price. / 商品価格（Price）は最低価格（Min Product Price）より大きい数字にしてください</span>";
 

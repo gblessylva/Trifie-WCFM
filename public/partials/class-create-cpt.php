@@ -240,7 +240,7 @@ function load_cpt_products(){
     $trifie_product_cost =get_post_meta(get_the_ID(), 'trifie_product_cost', true);
     $trifie_product_min_price= get_post_meta(get_the_ID(), 'trifie_product_min_price', true);
 
-    $return_json[$index][] = $link;
+    $return_json[$index][] = get_the_title();
     $return_json[$index][] = $prodigi_trifie_sku;
     $return_json[$index][] = $trifie_sku_recomended_size;
     $return_json[$index][]= $trifie_product_cost;
