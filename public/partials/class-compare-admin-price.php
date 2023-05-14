@@ -56,3 +56,5 @@ function set_admin_price_compare( $wcfm_products_manage_form_data, $form_manager
             }
     return $wcfm_products_manage_form_data;
   }
+
+ 

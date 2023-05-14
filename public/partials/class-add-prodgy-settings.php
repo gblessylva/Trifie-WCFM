@@ -46,6 +46,8 @@ function wcfmt_prodigy_settings($wcfm_options){
                $test_url = wcfm_get_option('wcfm_prodigy_test_api_url', 'https://api.sandbox.prodigi.com/v4.0/');
                $live_key = wcfm_get_option('wcfm_prodigy_live_api_key', '');
                $live_url = wcfm_get_option('wcfm_prodigy_live_api_url', 'https://api.prodigi.com/v4.0/');
+               $live_order_url = wcfm_get_option('wcfm_prodigy_live_order_api_url', 'https://api.prodigi.com/v4.0/orders?Top=10');
+               $test_order_url = wcfm_get_option('wcfm_prodigy_test_order_api_url', 'https://api.sandbox.prodigi.com/v4.0/orders?Top=10');
 
                $WCFM->wcfm_fields->wcfm_generate_form_field( array(
                    "wcfm_prodigy_live_mode" => array('label' => __('Enable Live Mode', 'wc-frontend-manager'), 
@@ -73,6 +75,15 @@ function wcfmt_prodigy_settings($wcfm_options){
                                                'type' => 'text', 
                                                'class' => 'wcfm-text  wcfm_ele', 
                                                'label_class' => 'wcfm_title wcfm_ele', 'value' => $live_url ),
+                    "wcfm_prodigy_live_order_api_url" => array('label' => __('LVE Order API URL', 'wc-frontend-manager'), 
+                                               'type' => 'text', 
+                                               'class' => 'wcfm-text  wcfm_ele', 
+                                               'label_class' => 'wcfm_title wcfm_ele', 'value' => $live_order_url ),
+                    "wcfm_prodigy_oest_order_api_url" => array('label' => __('Test Order API URL', 'wc-frontend-manager'), 
+                                               'type' => 'text', 
+                                               'class' => 'wcfm-text  wcfm_ele', 
+                                               'label_class' => 'wcfm_title wcfm_ele', 'value' => $live_order_url ),
+
                ),
            
            );
@@ -116,6 +127,16 @@ function wcfmt_prodigy_settings_update($wcfm_settings_form){
            $save_live_url = $wcfm_settings_form['wcfm_prodigy_live_api_url'];
            wcfm_update_option( 'wcfm_prodigy_live_api_url',  $save_live_url );
        }
+        // Save Live Order URL
+        if( isset( $wcfm_settings_form['wcfm_prodigy_live_order_api_url'] ) ) {
+            $save_live_order_url = $wcfm_settings_form['wcfm_prodigy_live_order_api_url'];
+            wcfm_update_option( 'wcfm_prodigy_live_order_api_url',  $save_live_order_url );
+        }
+        // Save Test Order URL
+        if( isset( $wcfm_settings_form['wcfm_prodigy_test_order_api_url'] ) ) {
+            $save_test_order_url = $wcfm_settings_form['wcfm_prodigy_test_order_api_url'];
+            wcfm_update_option( 'wcfm_prodigy_test_order_api_url',  $save_test_order_url );
+        }
 
 }
 
@@ -126,3 +147,4 @@ function wcfmt_prodigy_settings_update($wcfm_settings_form){
 add_filter('wcfm_is_allow_product_multivendor_title_edit_disable', '__return_false');
 
 
+ 

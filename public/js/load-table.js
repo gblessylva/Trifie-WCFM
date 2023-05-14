@@ -4,6 +4,11 @@ $product_taxonomy = {};
 $product_vendor = '';
 products = [];
 jQuery(document).ready(function($) {
+    // Copy product Templates
+  $('#copy_template').click(function(){
+    console.log("cliked")
+  });
+
     $.ajax({
       url: "/wp-admin/admin-ajax.php?action=datatables_endpoint",
       type: "POST",

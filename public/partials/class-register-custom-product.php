@@ -152,7 +152,7 @@ add_filter( 'wcfm_product_fields_stock', function( $stock_fields, $product_id, $
   return $stock_fields;
 }, 50, 3 );
 
-
+// $prodigi_product = $_GET['prodigi-id'];
 
 
 // Create Field if Template is not copied new fields
@@ -250,7 +250,24 @@ add_action('wp_enqueue_scripts', 'load_sku_script');
 add_action('wp_ajax_update_printable_sku', 'update_printable_sku');
 add_action('wp_ajax_no_priv_update_printable_sku','update_printable_sku');
 
-function update_printable_sku(){
+// Copy Prduct Template
+function copy_template($endpoint)
+{
+    global $WCFM;
+	$plugin_url = trailingslashit( plugins_url( '', __FILE__ ) );
+    wp_enqueue_script( 'copy_template_admin', $plugin_url .'../js/update-sku.js', array( 'jquery' ), $WCFM->version, true );
+    wp_localize_script( 'copy_template_admin', 'CopyTemplate', array(
+                    'ajaxurl' => admin_url( 'admin-ajax.php' ),
+                  ));
+}
+
+add_action('wp_enqueue_scripts', 'copy_template');
+
+
+add_action('wp_ajax_copy_template_admin', 'copy_template_admin');
+add_action('wp_ajax_no_priv_copy_template_admin','copy_template_admin');
+
+function copy_template_admin(){
     global $current_user;  
     $user_args = array(
         'author'        =>  $current_user->ID, 

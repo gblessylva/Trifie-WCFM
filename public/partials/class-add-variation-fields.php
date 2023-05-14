@@ -192,3 +192,20 @@ function make_variable_fields_required($variation_fields, $variations, $variatio
 }
 
 add_filter( 'wcfm_product_manage_fields_variations', 'make_variable_fields_required', 50, 5 );
+
+// function copy_produts_details($product_id ){
+//     // $product = WC_Product($product_id);
+//      $product = wc_get_product($prodigi_product);
+//      if($product){
+//          var_dump($product);
+//     var_dump($product_id);
+//      }
+   
+// }
+
+// add_action( 'init', 'copy_produts_details' );
+// $prodigi_product = $_GET['prodigi-id'];
+// if($prodigi_product){
+//     copy_produts_details($prodigi_product );
+   
+// }

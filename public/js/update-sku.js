@@ -13,6 +13,9 @@ jQuery(document).ready(function($){
 
     $(document).ready(function() {
       
+      // Function to copy product
+     
+
 
         $('#_printable_sku_field').change(function(){
             

@@ -71,8 +71,9 @@ add_action('sync_prodigi_orders', 'load_all_orders');
         $live_api_key = wcfm_get_option('wcfm_prodigy_live_api_key', '');
         $test_api_key_vendor =wcfm_get_option('wcfm_prodigy_test_api_key', '');
         $shipping_price = WC()->session->get('shipping_price');
+        $live_order_url = wcfm_get_option(' wcfm_prodigy_live_order_api_url');
         // var_dump($shipping_price);
-        $url = '';
+        $url = $live_order_url;
         $api_key = '';
         
         $product_array = array();
