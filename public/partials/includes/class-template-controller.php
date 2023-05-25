@@ -19,6 +19,19 @@ function load_product_template_script( $end_point ) {
 add_action( 'wcfm_load_scripts', 'load_product_template_script' );
 add_action( 'after_wcfm_load_scripts', 'load_product_template_script' );
 
+
+function copy_products($prodigi_product){
+    global $WCFM, $wpdb, $_POST;
+
+    $prodigi_product = $_GET['prodigi-id'];
+    if($prodigi_product){
+    var_dump($prodigi_product);
+    
+    }
+}
+
+add_action('init', 'copy_products');
+
  function load_product_templates() {
     global $WCFM, $wpdb, $_POST;
 		

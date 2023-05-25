@@ -66,12 +66,14 @@ add_action('sync_prodigi_orders', 'load_all_orders');
 
     function load_all_orders(){
         $allow_live_mode = wcfm_get_option('wcfm_prodigy_live_mode');
-        // $test_url = wcfm_get_option('wcfm_prodigy_test_api_url');
+        $test_url = wcfm_get_option('wcfm_prodigy_test_api_url');
         // $live_url = wcfm_get_option('wcfm_prodigy_live_api_url', '');
         $live_api_key = wcfm_get_option('wcfm_prodigy_live_api_key', '');
         $test_api_key_vendor =wcfm_get_option('wcfm_prodigy_test_api_key', '');
         $shipping_price = WC()->session->get('shipping_price');
+        $live_order_url = wcfm_get_option(' wcfm_prodigy_live_order_api_url');
         // var_dump($shipping_price);
+        // $url = $live_order_url;
         $url = '';
         $api_key = '';
         
@@ -79,10 +81,10 @@ add_action('sync_prodigi_orders', 'load_all_orders');
         
         // Check if Application is LIVE or TEST
         if ($allow_live_mode == 'yes') {
-            // $url = $live_url;
+            $url = $live_order_url;
             $api_key = $live_api_key;
         } else {
-            // $url = $test_url;
+            $url = 'https://api.sandbox.prodigi.com/v4.0/orders?Top=10';
             $api_key = $test_api_key_vendor;
         }
    
@@ -94,7 +96,6 @@ add_action('sync_prodigi_orders', 'load_all_orders');
 			'status' => array('wc-processing', 'wc-on-hold'),
         ) );
         $orders = $query->get_orders();
-        $url = "https://api.sandbox.prodigi.com/v4.0/orders?Top=10";
         $response = wp_remote_post( $url, array(
             'method' => 'GET',
             'headers' => array(

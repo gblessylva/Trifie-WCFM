@@ -725,7 +725,7 @@ function load_template_products(){
     $postsQ->the_post();
      $actions = '<a class="wcfm-action-icon" href="#"><span class="fa fa-copy clone-template text_tip" data-id= "'.get_the_ID().'" data-tip="' . esc_attr__( 'Clone Template', 'wcfm-cpt' ) . '"></span></a>';
     $actions = '<a class="wcfm-action-icon " target="_blank" href="'.site_url().'/store-manager/trifie_sku-manage/'.get_the_ID().'"><span class="fa fa-edit text_tip" data-tip="' . esc_attr__( 'Edit Template', 'wcfm-cpt' ) . '"></span></a>';;
-    $actions .= '<a class="wcfm-action-icon " target="_blank" href="'.site_url().'/store-manager/products-manage?prodigi-id='.get_the_ID().'"><span class="fa fa-clone text_tip" data-tip="' . esc_attr__( 'Clone Template', 'wcfm-cpt' ) . '"></span></a>';
+    $actions .= '<a class="wcfm-action-icon" target="_blank" href="'.site_url().'/store-manager/products-manage?prodigi-id='.get_the_ID().'"><span class="fa fa-clone text_tip" data-tip="' . esc_attr__( 'Clone Template', 'wcfm-cpt' ) . '"></span></a>';
      $link = get_the_title();
     // $link = get_the_title();
     $prod= wc_get_product( get_the_ID() );
