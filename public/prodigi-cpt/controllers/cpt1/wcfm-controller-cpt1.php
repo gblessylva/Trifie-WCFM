@@ -117,14 +117,14 @@ class WCFM_Cpt1_Controller {
 				// Title
 				if( apply_filters( 'wcfm_is_allow_edit_cpt1', true ) ) {
 					// 1
-					$wcfm_cpt1_json_arr[$index][] =  '<a href="' . get_wcfm_cpt1_manage_url( $wcfm_cpt1_single->ID ) . '" class="wcfm_cpt1_title wcfm_dashboard_item_title">' . $wcfm_cpt1_single->post_title . '</a>';
+					$wcfm_cpt1_json_arr[$index][] =  $wcfm_cpt1_single->post_title;
 				} else {
 					if( $wcfm_cpt1_single->post_status == 'publish' ) {
-						$wcfm_cpt1_json_arr[$index][] =  apply_filters( 'wcfm_cpt1_title_dashboard', $wcfm_cpt1_single->post_title, $wcfm_cpt1_single->ID );
+						$wcfm_cpt1_json_arr[$index][] =  $wcfm_cpt1_single->post_title;
 					} elseif( apply_filters( 'wcfm_is_allow_edit_cpt1', true ) ) {
-						$wcfm_cpt1_json_arr[$index][] =  apply_filters( 'wcfm_cpt1_title_dashboard', '<a href="' . get_wcfm_cpt1_manage_url( $wcfm_cpt1_single->ID ) . '" class="wcfm_cpt1_title wcfm_dashboard_item_title">' . $wcfm_cpt1_single->post_title . '</a>', $wcfm_cpt1_single->ID );
+						$wcfm_cpt1_json_arr[$index][] =  $wcfm_cpt1_single->post_title;
 					} else {
-						$wcfm_cpt1_json_arr[$index][] =  apply_filters( 'wcfm_cpt1_title_dashboard', $wcfm_cpt1_single->post_title, $wcfm_cpt1_single->ID );
+						$wcfm_cpt1_json_arr[$index][] = $wcfm_cpt1_single->post_title;
 					}
 				}
 

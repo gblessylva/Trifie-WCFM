@@ -1,5 +1,57 @@
 <?php
 
+$prodigi_product = $_GET['prodigi-id'];
+if($prodigi_product){
+    add_action('wp', 'duplicate_woo_product');
+}
+
+function duplicate_woo_product() {
+    // Check if WooCommerce is active
+    if (class_exists('WooCommerce')) {
+        // Get the product ID
+        $product_id = $_GET['prodigi-id']; // Replace with your actual product ID
+        // Get the product object
+        $product = wc_get_product($product_id);
+        
+        // Check if the product object exists
+        if ($product) {
+            $author_id = get_current_user_id();
+            $new_product_data = $product->get_data();
+            $new_product_id = wp_insert_post(array(
+                'post_title'   => $new_product_data['name'],
+                'post_content' => $new_product_data['description'],
+                'post_status'  => 'publish',
+                'post_type'    => 'product',
+            ));
+            $new_product = new WC_Product_Variable();
+            $new_product->set_props($new_product_data);
+            $new_product->set_name("Copy-" . $new_product_data['name']);
+            $new_product->set_status('publish');
+            // $new_product->set_is_in_stock('instock');
+            $new_product->set_id($new_product_id);
+            $new_product_id = $new_product->save();
+           
+            foreach ($product->get_meta_data() as $meta) {
+                $metal= update_post_meta($new_product_id, $meta->key, $meta->value);
+                // var_dump($metal);
+              }
+            //  $metal = $new_product->save_meta_data();
+            
+            var_dump($new_product_id);
+            wp_safe_redirect('/store-manager/products-manage/' . $new_product_id);
+            // http://wcfm.local/store-manager/products-manage/6525
+            exit;
+        } else {
+            // Product not found
+            echo 'Product not found.';
+        }
+    } else {
+        // WooCommerce is not active
+        echo 'WooCommerce is not active.';
+    }
+}
+
+
 // "sku" => array('label' => __('SKU', 'wc-frontend-manager'), 'type' => 'text', 'class' => 'wcfm-text wcfm_ele wcfm_half_ele variable variable-subscription pw-gift-card', 'label_class' => 'wcfm_title wcfm_half_ele_title'),
 // do_action( 'wcfm_products_manage_variable_end', $product_id, $product_type );
 function wcfm_product_manage_fields_variations_trifie($variation_fields,  $variations, $variation_shipping_option_array,  $variation_tax_classes_options ) {
@@ -192,3 +244,4 @@ function make_variable_fields_required($variation_fields, $variations, $variatio
 }
 
 add_filter( 'wcfm_product_manage_fields_variations', 'make_variable_fields_required', 50, 5 );
+

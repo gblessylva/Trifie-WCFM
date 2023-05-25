@@ -308,7 +308,8 @@ function add_copied_templated_field( $fields, $product_id, $product_type, $wcfm_
     'ID'=> $prodigi_product
     );
     $query = new WP_Query($trifie_args);
-    $prodigi_sku = get_post_meta($prodigi_product, 'prodigi_trifie_sku', true);
+
+    $prodigi_sku = get_post_meta($prodigi_product, '_printable_sku', true);
     // var_dump($prodigi_sku);
 
     $new_field = array( "_printable_sku" => 

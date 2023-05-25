@@ -231,7 +231,7 @@ function load_cpt_products(){
     $url = get_the_permalink(get_the_ID());
     $postsQ->the_post();
     // $actions = '<a class="wcfm-action-icon" href="#"><span class="fa fa-copy clone-template text_tip" data-id= "'.get_the_ID().'" data-tip="' . esc_attr__( 'Clone Template', 'wcfm-cpt' ) . '"></span></a>';
-    $actions = '<a class="wcfm-action-icon " target="_blank" href="'.site_url().'/store-manager/trifie_sku-manage/'.get_the_ID().'"><span class="fa fa-edit text_tip" data-tip="' . esc_attr__( 'Edit Template', 'wcfm-cpt' ) . '"></span></a>';;
+    $actions = '<a class="wcfm-action-icon " target="_blank" href="'.site_url().'/store-manager/products-manage/'.get_the_ID().'"><span class="fa fa-edit text_tip" data-tip="' . esc_attr__( 'Edit Template', 'wcfm-cpt' ) . '"></span></a>';;
     $actions .= '<a class="wcfm-action-icon " target="_blank" href="'.site_url().'/store-manager/products-manage?prodigi-id='.get_the_ID().'"><span class="fa fa-clone text_tip" data-tip="' . esc_attr__( 'Clone Template', 'wcfm-cpt' ) . '"></span></a>';
     $link = '<a href="'.$url.'" target="_blank">'. get_the_title().' </a>';
     
@@ -240,7 +240,7 @@ function load_cpt_products(){
     $trifie_product_cost =get_post_meta(get_the_ID(), 'trifie_product_cost', true);
     $trifie_product_min_price= get_post_meta(get_the_ID(), 'trifie_product_min_price', true);
 
-    $return_json[$index][] = $link;
+    $return_json[$index][] = get_the_title();
     $return_json[$index][] = $prodigi_trifie_sku;
     $return_json[$index][] = $trifie_sku_recomended_size;
     $return_json[$index][]= $trifie_product_cost;
